@@ -286,7 +286,7 @@ footer{border-top:1px solid var(--b);padding:28px 40px;max-width:1100px;margin:0
       <td>3,674</td>
       <td><span class="badge badge-g">Core</span></td>
       <td>
-        PTB Application entry point. ConversationHandlers for /start login flow and /setai AI setup. 15 CommandHandlers. Single CallbackQueryHandler routing 50+ callback patterns. AI chat via MessageHandler. Rate limiter (15 msg/min). Stale AI request cancellation via <code>_pending_ai_tasks</code>. Smart reply buttons (asset detection → trade buttons). Trade plan confirmation/execution flow. News subscription management UI. Trade defaults configuration.
+        PTB Application entry point. ConversationHandlers for /start login flow and /setai AI setup. 14 CommandHandlers. Single CallbackQueryHandler routing 50+ callback patterns. AI chat via MessageHandler. Rate limiter (15 msg/min). Stale AI request cancellation via <code>_pending_ai_tasks</code>. Smart reply buttons (asset detection → trade buttons). Trade plan confirmation/execution flow. News subscription management UI. Trade defaults configuration.
       </td>
     </tr>
     <tr>
@@ -757,7 +757,7 @@ system_prompt += account_context                   <span class="cm">// equity, p
 <div class="container">
   <div class="stag">// commands & callbacks</div>
   <h2 class="sh">Bot Commands</h2>
-  <p class="sd">15 slash commands + 50+ inline callback patterns. All replies bound to original message.</p>
+  <p class="sd">14 slash commands + 50+ inline callback patterns. All replies bound to original message.</p>
 
   <table class="tbl">
     <tr><th>Command</th><th>Auth</th><th>Handler</th><th>Description</th></tr>
@@ -770,7 +770,6 @@ system_prompt += account_context                   <span class="cm">// equity, p
     <tr><td><code>/setai</code></td><td>—</td><td>ConversationHandler</td><td>AI setup: choose provider → input 3 lines (key/url/model) → auto-test</td></tr>
     <tr><td><code>/memory</code></td><td>AI</td><td>cmd_memory</td><td>Memory stats + clear button. Shows msg count + summary count.</td></tr>
     <tr><td><code>/event</code></td><td>—</td><td>cmd_event</td><td>Event Trading hub: sources, toggle, frequency, trade defaults</td></tr>
-    <tr><td><code>/news</code></td><td>—</td><td>cmd_event</td><td>Legacy alias for /event</td></tr>
     <tr><td><code>/feedback</code></td><td>—</td><td>cmd_feedback</td><td>Submit product feedback (min length enforced)</td></tr>
     <tr><td><code>/logout</code></td><td>edgeX</td><td>cmd_logout</td><td>Disconnect edgeX account with confirmation</td></tr>
     <tr><td><code>/help</code></td><td>—</td><td>cmd_help</td><td>Command reference</td></tr>
