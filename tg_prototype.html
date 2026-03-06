@@ -56,7 +56,7 @@ h1{text-align:center;padding:24px 0 4px;font-size:24px}.subtitle{text-align:cent
 <p class="subtitle">100% code-accurate — Back = edit in place (safe_edit) — modals = NEW msgs (dashed red) — results show Start only — all AI trades have mandatory TP/SL</p>
 <div class="stats">
 <div class="stat"><div class="stat-num">4</div><div class="stat-label">Modules</div></div>
-<div class="stat"><div class="stat-num">80</div><div class="stat-label">Screens</div></div>
+<div class="stat"><div class="stat-num">71</div><div class="stat-label">Screens</div></div>
 <div class="stat"><div class="stat-num">3</div><div class="stat-label">Max Depth</div></div>
 </div>
 <div class="legend">
@@ -112,7 +112,7 @@ html+=`<div class="module"><div class="mod-hdr m-trade"><div class="ic">📈</di
 html+=`<div class="flow-section"><div class="flow-label">📈 / 🔗 Before vs after login</div><div class="flow-row">`;
 html+=P('show_login','🔗 Connect edgeX',`🔗 <b>Connect edgeX — Trade on edgeX</b>\n\nChoose how to connect:`,[{t:'⚡ One-Click OAuth (soon)',c:'gy f'},{t:'🔑 Connect with API Key',c:'bl f'},{t:'👤 Aaron\'s Account (temp)',c:'gn f'},{t:'🔙 Back',c:'bk f'}],'login_oauth / login_api / login_demo / back_to_dashboard',2,'S');
 html+=OR();
-html+=P('trade_hub','📈 Trade Hub',`📈 <b>Trade on edgeX — Trade on edgeX</b>\n\n├ Equity: <code>$1,234.56</code>\n└ Available: <code>$890.12</code>\n\n<b>Open Positions (2):</b>\n⬆️ BTC LONG <code>$712.00</code> (5x) @ <code>$71,200.00</code> | PnL: <code>+$12.30</code>\n⬇️ ETH SHORT <code>$1,500.00</code> (3x) @ <code>$3,000.00</code> | PnL: <code>-$5.20</code>\n\nUnrealized P&L: ⬆️ <code>+$7.10</code>`,[{t:'📤 Share PnL',c:'bl f'},{t:'💰 Position',c:'bl'},{t:'📋 Orders',c:'bl'},{t:'📜 History',c:'bl'},{t:'🚪 Disconnect',c:'rd'},{t:'🔙 Back',c:'bk f'}],'quick_pnl / quick_close / quick_orders / quick_history / logout_confirm / back_to_dashboard. Also handles quick_status.',2,'S');
+html+=P('trade_hub','📈 Trade Hub',`📈 <b>Trade on edgeX — Trade on edgeX</b>\n\n├ Equity: <code>$1,234.56</code>\n└ Available: <code>$890.12</code>\n\n<b>Open Positions (2):</b>\n⬆️ BTC LONG <code>$712.00</code> (5x) @ <code>$71,200.00</code> | PnL: <code>+$12.30</code>\n⬇️ ETH SHORT <code>$1,500.00</code> (3x) @ <code>$3,000.00</code> | PnL: <code>-$5.20</code>\n\nUnrealized P&L: ⬆️ <code>+$7.10</code>`,[{t:'📤 Share PnL',c:'bl f'},{t:'💰 Position',c:'bl'},{t:'📋 Orders',c:'bl'},{t:'📜 History',c:'bl'},{t:'🚪 Disconnect',c:'rd'},{t:'🔙 Back',c:'bk f'}],'Also: /status. quick_pnl / quick_close / quick_orders / quick_history / logout_confirm / back_to_dashboard.',2,'S');
 html+=`</div>`;
 
 // --- Login sub-screens ---
@@ -127,10 +127,10 @@ html+=`</div>`;
 html+=`<div class="flow-label" style="margin-top:10px">Trade Hub → sub-screens (all edit in place)</div><div class="tree-indent">`;
 
 // Share PnL
-html+=`<div class="tree-item"><div class="flow-row">${P('quick_pnl','📤 Share PnL',`📤 <b>Share PnL — Trade on edgeX</b>\n\n<b>Unrealized P&L:</b> ⬆️ <code>+$7.10</code>\n\n📈 <b>OPEN (2):</b>\n⬆️ BTC LONG (5x) | <b>+8.2%</b> (+$12.30) | Entry: <code>$71,200</code>\n⬇️ ETH SHORT (3x) | <b>-1.7%</b> (-$5.20) | Entry: <code>$3,000</code>\n\n📜 <b>CLOSED (10):</b>\n⬆️ DOGE SELL 600 @ $0.096 | <b>+4.71%</b> (+$1.27) | 03/05 05:51\n⬇️ DOGE SELL 300 @ $0.096 | <b>-0.23%</b> (-$0.03) | 03/05 06:32`,[{t:'📤 BTC LONG +8.2%',c:'bl f'},{t:'📤 ETH SHORT -1.7%',c:'bl f'},{t:'📤 DOGE +4.71%',c:'bl f'},{t:'📤 DOGE -0.23%',c:'bl f'},{t:'◀ Prev',c:'gy'},{t:'Next ▶',c:'gy'},{t:'🔙 Back',c:'bk f'}],'OPEN + CLOSED split. Pagination for closed. Back → trade_hub.',3)}${AN('share click')}${P('share_card','📤 PnL Card',`──────────────────\n⬆️ <b>BTC/USDT</b> · LONG (5x)\n──────────────────\n\n💰 PnL%:  <b>+8.2%</b>\n\n├ Entry: <code>$71,200.00</code>\n├ Mark:  <code>$71,890.00</code>\n└ 2026-03-05 08:00 UTC\n\n👤 Aaron Wong\n⚡ Traded on <b>edgeX</b> via @edgeXAgentBot`,[{t:'📤 Forward to Chat',c:'bl f'}],'NEW msg. Same format for open+closed. switch_inline_query.',3)}</div></div>`;
+html+=`<div class="tree-item"><div class="flow-row">${P('quick_pnl','📤 Share PnL',`📤 <b>Share PnL — Trade on edgeX</b>\n\n<b>Unrealized P&L:</b> ⬆️ <code>+$7.10</code>\n\n📈 <b>OPEN (2):</b>\n⬆️ BTC LONG (5x) | <b>+8.2%</b> (+$12.30) | Entry: <code>$71,200</code>\n⬇️ ETH SHORT (3x) | <b>-1.7%</b> (-$5.20) | Entry: <code>$3,000</code>\n\n📜 <b>CLOSED (10):</b>\n⬆️ DOGE SELL 600 @ $0.096 | <b>+4.71%</b> (+$1.27) | 03/05 05:51\n⬇️ DOGE SELL 300 @ $0.096 | <b>-0.23%</b> (-$0.03) | 03/05 06:32`,[{t:'📤 BTC LONG +8.2%',c:'bl f'},{t:'📤 ETH SHORT -1.7%',c:'bl f'},{t:'📤 DOGE +4.71%',c:'bl f'},{t:'📤 DOGE -0.23%',c:'bl f'},{t:'◀ Prev',c:'gy'},{t:'Next ▶',c:'gy'},{t:'🔙 Back',c:'bk f'}],'Also: /pnl. OPEN + CLOSED split. Pagination for closed. Back → trade_hub.',3)}${AN('share click')}${P('share_card','📤 PnL Card',`──────────────────\n⬆️ <b>BTC/USDT</b> · LONG (5x)\n──────────────────\n\n💰 PnL%:  <b>+8.2%</b>\n\n├ Entry: <code>$71,200.00</code>\n├ Mark:  <code>$71,890.00</code>\n└ 2026-03-05 08:00 UTC\n\n👤 Aaron Wong\n⚡ Traded on <b>edgeX</b> via @edgeXAgentBot`,[{t:'📤 Forward to Chat',c:'bl f'}],'NEW msg. Same format for open+closed. switch_inline_query.',3)}</div></div>`;
 
 // Position + Close flows
-html+=`<div class="tree-item"><div class="flow-row">${P('quick_close','💰 Position',`💰 <b>Position — Trade on edgeX</b>\n\n⬆️ <b>BTC LONG</b> (5x)\n  ├ Value: <code>$712.00</code> | Entry: <code>$71,200.00</code>\n  └ PnL: <code>+$12.30</code>\n\n⬇️ <b>ETH SHORT</b> (3x)\n  ├ Value: <code>$1,500.00</code> | Entry: <code>$3,000.00</code>\n  └ PnL: <code>-$5.20</code>`,[{t:'🔴 Market Close BTC LONG',c:'rd f'},{t:'🔴 Market Close ETH SHORT',c:'rd f'},{t:'🔴 Market Close All',c:'rd f'},{t:'🔙 Back',c:'bk f'}],'close_confirm_{contractId} per position. close_confirm_all. Back → trade_hub.',3)}</div></div>`;
+html+=`<div class="tree-item"><div class="flow-row">${P('quick_close','💰 Position',`💰 <b>Position — Trade on edgeX</b>\n\n⬆️ <b>BTC LONG</b> (5x)\n  ├ Value: <code>$712.00</code> | Entry: <code>$71,200.00</code>\n  └ PnL: <code>+$12.30</code>\n\n⬇️ <b>ETH SHORT</b> (3x)\n  ├ Value: <code>$1,500.00</code> | Entry: <code>$3,000.00</code>\n  └ PnL: <code>-$5.20</code>`,[{t:'🔴 Market Close BTC LONG',c:'rd f'},{t:'🔴 Market Close ETH SHORT',c:'rd f'},{t:'🔴 Market Close All',c:'rd f'},{t:'🔙 Back',c:'bk f'}],'Also: /close. close_confirm_{contractId} per position. close_confirm_all. Back → trade_hub.',3)}</div></div>`;
 html+=`<div class="tree-item">${NOTE('<b>Close Single Position flow:</b>')}</div>`;
 html+=`<div class="tree-item"><div class="flow-row">${P('close_modal','⚠️ Close Confirm',`🔴 <b>Market Close BTC LONG — Trade on edgeX</b>\n\n⚠️ This will market-close your BTC position.\n\n├ LONG | Value: <code>$712.00</code> | Entry: <code>$71,200</code>\n└ PnL: <code>+$12.30</code>\n\nAre you sure?`,[{t:'✅ Yes, close BTC',c:'gn f'},{t:'❌ Cancel',c:'rd f'}],'Modal (new msg). close_{contractId} / close_cancel.',3,'M')}${A('✅')}${P('close_ok','✅ Closed',`⬆️ <b>Close BTC LONG — Trade on edgeX</b>\n\n✅ LONG position closed\n\n├ Entry: <code>$71,234</code>\n├ Size: <code>0.01</code> | Value: <code>$712.00</code>\n├ Realized P&L: <code>+$12.30</code>\n├ Balance: <code>$1,246.86</code> (Available: <code>$1,200.00</code>)\n└ Order ID: <code>abc123</code>`,[{t:'🚀 Start',c:'bk f'}],'Edits modal.',3)}${OR()}${P('close_cancel_r','❌ Cancelled',`💰 <b>Position — Trade on edgeX</b>\n\n❌ Close cancelled. No positions were closed.`,[{t:'🚀 Start',c:'bk f'}],'Edits modal.',3)}</div></div>`;
 html+=`<div class="tree-item">${NOTE('<b>Close blocked by orders (MARGIN_BLOCKED_BY_ORDERS):</b>')}</div>`;
@@ -139,7 +139,7 @@ html+=`<div class="tree-item">${NOTE('<b>Close All Positions flow:</b>')}</div>`
 html+=`<div class="tree-item"><div class="flow-row">${P('close_all_modal','⚠️ Close All',`🔴 <b>Market Close All — Trade on edgeX</b>\n\n⚠️ This will market-close ALL open positions.\n\n2 position(s):\n• BTC LONG $712.00\n• ETH SHORT $1,500.00\n\nAre you sure?`,[{t:'✅ Yes, close all',c:'gn f'},{t:'❌ Cancel',c:'rd f'}],'Modal (new msg). close_all_yes / close_cancel.',3,'M')}${A('✅')}${P('close_all_ok','✅ All Closed',`🔴 <b>Close All — Trade on edgeX</b>\n\n✅ BTC LONG closed\n✅ ETH SHORT closed`,[{t:'🚀 Start',c:'bk f'}],'Per-position results.',3)}</div></div>`;
 
 // Orders + Cancel flows
-html+=`<div class="tree-item"><div class="flow-row">${P('quick_orders','📋 Open Orders',`📋 <b>Open Orders — Trade on edgeX</b>\n\n2 order(s):\n\n  • BTC BUY LIMIT (5x) | Size: 100 | Price: $70,000 | Now: $71,234 (1.7% away)\n  • ETH SELL LIMIT (3x) | Size: 50 | Price: $4,100 | Now: $3,950 (3.8% away)`,[{t:'❌ Cancel BTC BUY 100@70000',c:'rd f'},{t:'❌ Cancel ETH SELL 50@4100',c:'rd f'},{t:'❌ Cancel All Orders',c:'rd f'},{t:'🔙 Back',c:'bk f'}],'cancelone_confirm_{orderId} / cancelorders_confirm_all / trade_hub.',3)}</div></div>`;
+html+=`<div class="tree-item"><div class="flow-row">${P('quick_orders','📋 Open Orders',`📋 <b>Open Orders — Trade on edgeX</b>\n\n2 order(s):\n\n  • BTC BUY LIMIT (5x) | Size: 100 | Price: $70,000 | Now: $71,234 (1.7% away)\n  • ETH SELL LIMIT (3x) | Size: 50 | Price: $4,100 | Now: $3,950 (3.8% away)`,[{t:'❌ Cancel BTC BUY 100@70000',c:'rd f'},{t:'❌ Cancel ETH SELL 50@4100',c:'rd f'},{t:'❌ Cancel All Orders',c:'rd f'},{t:'🔙 Back',c:'bk f'}],'Also: /orders. cancelone_confirm_{orderId} / cancelorders_confirm_all / trade_hub.',3)}</div></div>`;
 html+=`<div class="tree-item">${NOTE('<b>Cancel Single Order:</b>')}</div>`;
 html+=`<div class="tree-item"><div class="flow-row">${P('cancel_modal','⚠️ Cancel Order',`❌ <b>Cancel Order — Trade on edgeX</b>\n\n⚠️ Cancel this order?\n\n├ BTC BUY LIMIT\n├ Size: <code>100</code> | Price: <code>$70,000</code>\n└ Order ID: <code>abc123def456789</code>`,[{t:'✅ Yes, cancel',c:'gn f'},{t:'❌ Keep order',c:'rd f'}],'Modal. cancelone_{orderId} / cancel_dismiss.',3,'M')}${A('✅')}${P('cancel_ok','✅ Cancelled',`✅ <b>Order Cancelled — Trade on edgeX</b>\n\nOrder <code>abc123def456789</code> cancelled successfully.`,[{t:'🚀 Start',c:'bk f'}],'Edits modal.',3)}${OR()}${P('cancel_keep','❌ Kept',`📋 <b>Orders — Trade on edgeX</b>\n\n❌ Cancelled. Orders kept.`,[{t:'🚀 Start',c:'bk f'}],'cancel_dismiss. Edits modal.',3)}</div></div>`;
 html+=`<div class="tree-item">${NOTE('<b>Cancel All Orders:</b>')}</div>`;
@@ -149,10 +149,10 @@ html+=`<div class="tree-item"><div class="flow-row">${P('cancel_all_modal','⚠�
 html+=`<div class="tree-item"><div class="flow-row">${P('vieworders','📋 View Orders (per symbol)',`📋 <b>Open Orders for BTC</b> (2):\n\n  • BUY LIMIT | Size: 100 | Price: $70,000\n  • SELL LIMIT | Size: 50 | Price: $80,000`,[{t:'❌ Cancel BUY 100@70000',c:'rd f'},{t:'❌ Cancel SELL 50@80000',c:'rd f'},{t:'❌ Cancel All BTC Orders',c:'rd f'},{t:'📈 Trade Hub',c:'bl'},{t:'🚀 Start',c:'bk'}],'vieworders_{contractId}. cancelone_{orderId} / cancelorders_{cid}.',3)}</div></div>`;
 
 // History
-html+=`<div class="tree-item"><div class="flow-row">${P('quick_history','📜 History',`📜 <b>Recent Trades — Trade on edgeX</b>\n\n⬆️ BTC BUY LIMIT (5x) 0.01 @ $71,234.00 | PnL: +$2.3400 | 03/05 08:00\n⬇️ DOGE SELL MARKET (3x) 300 @ $0.09600 | PnL: -$0.0300 | 03/05 07:30`,[{t:'🔙 Back',c:'bk f'}],'Up to 10 trades. Type + leverage shown. Back → trade_hub.',3)}</div></div>`;
+html+=`<div class="tree-item"><div class="flow-row">${P('quick_history','📜 History',`📜 <b>Recent Trades — Trade on edgeX</b>\n\n⬆️ BTC BUY LIMIT (5x) 0.01 @ $71,234.00 | PnL: +$2.3400 | 03/05 08:00\n⬇️ DOGE SELL MARKET (3x) 300 @ $0.09600 | PnL: -$0.0300 | 03/05 07:30`,[{t:'🔙 Back',c:'bk f'}],'Also: /history. Up to 10 trades. Type + leverage shown. Back → trade_hub.',3)}</div></div>`;
 
 // Logout
-html+=`<div class="tree-item"><div class="flow-row">${P('logout','🚪 Disconnect',`🚪 <b>Disconnect — Trade on edgeX</b>\n\nThis will log out your edgeX account. Are you sure?`,[{t:'✅ Yes, logout',c:'rd'},{t:'❌ Cancel',c:'gy'}],'Modal (new msg). logout_yes / logout_no.',3,'M')}${A('✅')}${P('logout_yes','✅ Logged out',`🚪 <b>Disconnect — Trade on edgeX</b>\n\n✅ Successfully logged out.`,[{t:'🚀 Start',c:'bk f'}],'Edits modal.',3)}${OR()}${P('logout_no','❌ Kept',`🚪 <b>Disconnect — Trade on edgeX</b>\n\n❌ Logout cancelled. Your account is still connected.`,[{t:'🚀 Start',c:'bk f'}],'Edits modal.',3)}</div></div>`;
+html+=`<div class="tree-item"><div class="flow-row">${P('logout','🚪 Disconnect',`🚪 <b>Disconnect — Trade on edgeX</b>\n\nThis will log out your edgeX account. Are you sure?`,[{t:'✅ Yes, logout',c:'rd'},{t:'❌ Cancel',c:'gy'}],'Also: /logout. Modal (new msg). logout_yes / logout_no.',3,'M')}${A('✅')}${P('logout_yes','✅ Logged out',`🚪 <b>Disconnect — Trade on edgeX</b>\n\n✅ Successfully logged out.`,[{t:'🚀 Start',c:'bk f'}],'Edits modal.',3)}${OR()}${P('logout_no','❌ Kept',`🚪 <b>Disconnect — Trade on edgeX</b>\n\n❌ Logout cancelled. Your account is still connected.`,[{t:'🚀 Start',c:'bk f'}],'Edits modal.',3)}</div></div>`;
 
 html+=`</div></div></div>`;
 
@@ -182,7 +182,7 @@ html+=`</div>`;
 html+=`<div class="flow-label" style="margin-top:10px">AI Hub → sub-screens</div><div class="tree-indent">`;
 html+=`<div class="tree-item"><div class="flow-row">${P('persona','🎭 Personality',`🎭 <b>Personality — AI Agent</b>\n\nChoose your Agent's vibe:`,[{t:'🔥 Degen',c:'bl'},{t:'🎯 Sensei',c:'bl'},{t:'🤖 Cold Blood',c:'bl'},{t:'👀 Shitposter',c:'bl'},{t:'📚 Professor',c:'bl'},{t:'🐺 Wolf',c:'bl'},{t:'🌸 Moe',c:'bl f'},{t:'🔙 Back',c:'bk f'}],'SHARED: from AI Hub + Activation screens. 7 persona options. Back → ai_hub.',3,'S')}${A('pick')}${P('persona_ok','🎭 Set!',`🎭 <b>Personality Set — AI Agent</b>\n\n✅ Active: <b>🔥 Degen</b>\n\n<i>LFG! Aping into every trade with zero fear. NFA but we're gonna make it, fren.</i>`,[{t:'🚀 Start',c:'bk f'}],'Each persona has unique greeting.',3)}</div></div>`;
 html+=`<div class="tree-item">${NOTE('<b>7 persona greetings:</b><br>🔥 Degen: "LFG! Aping into every trade with zero fear..."<br>🎯 Sensei: "The market rewards patience and discipline..."<br>🤖 Cold Blood: "Emotions eliminated. All decisions based on data..."<br>👀 Shitposter: "lmaooo we\'re about to ratio the entire market..."<br>📚 Professor: "Excellent choice. I shall provide thorough analysis..."<br>🐺 Wolf: "The hunt begins. Every dip is prey..."<br>🌸 Moe: "Yay~ I\'ll do my best to help you!..."')}</div>`;
-html+=`<div class="tree-item"><div class="flow-row">${P('memory','📝 Memory',`📝 <b>Memory — AI Agent</b>\n\n├ Messages: <code>26</code>\n└ Summaries: <code>2</code>`,[{t:'🗑 Clear Memory',c:'rd f'},{t:'🔙 Back',c:'bk f'}],'memory_clear_confirm (modal) / ai_hub.',3)}${AN('modal')}${P('mem_modal','🗑 Clear Confirm',`🗑 <b>Clear Memory — AI Agent</b>\n\nAll conversation history and preferences will be deleted.\nThis cannot be undone.`,[{t:'✅ Yes, clear all',c:'rd'},{t:'❌ Keep',c:'gy'}],'Modal (new msg). memory_clear_yes / memory_clear_no.',3,'M')}</div></div>`;
+html+=`<div class="tree-item"><div class="flow-row">${P('memory','📝 Memory',`📝 <b>Memory — AI Agent</b>\n\n├ Messages: <code>26</code>\n└ Summaries: <code>2</code>`,[{t:'🗑 Clear Memory',c:'rd f'},{t:'🔙 Back',c:'bk f'}],'Also: /memory. memory_clear_confirm (modal) / ai_hub.',3)}${AN('modal')}${P('mem_modal','🗑 Clear Confirm',`🗑 <b>Clear Memory — AI Agent</b>\n\nAll conversation history and preferences will be deleted.\nThis cannot be undone.`,[{t:'✅ Yes, clear all',c:'rd'},{t:'❌ Keep',c:'gy'}],'Modal (new msg). memory_clear_yes / memory_clear_no.',3,'M')}</div></div>`;
 html+=`<div class="tree-item"><div class="flow-row">${P('mem_yes','✅ Cleared',`🗑 <b>Clear Memory — AI Agent</b>\n\n✅ Memory cleared.\n\n├ Deleted: <code>26</code> messages\n└ Deleted: <code>2</code> summaries\n\nYour Agent starts fresh. Chat to build new memory.`,[{t:'🚀 Start',c:'bk f'}],'Edits modal.',3)}${OR()}${P('mem_no','❌ Kept',`🗑 <b>Clear Memory — AI Agent</b>\n\n❌ Cancelled. Your memory is safe.\n\nAll conversations and preferences kept intact.`,[{t:'🚀 Start',c:'bk f'}],'Edits modal.',3)}</div></div>`;
 html+=`</div>`;
 
@@ -214,7 +214,7 @@ html+=`<div class="module"><div class="mod-hdr m-event"><div class="ic">📰</di
 
 // --- Hub ---
 html+=`<div class="flow-section"><div class="flow-label">📰 Event Trading Hub</div><div class="flow-row">`;
-html+=P('news_hub','📰 Event Trading',`📰 <b>Event Trading — Event Trading</b>\n\nAI-analyzed news with one-tap trade buttons.\n\n✅ <b>BWEnews</b> — 5/hr`,[{t:'BWEnews 🟢ON',c:'gn',w:'t'},{t:'🕒',c:'gy',w:'q'},{t:'🗑',c:'gy',w:'q'},{t:'➕ Add News Source',c:'bl f'},{t:'⚙️ Trade Defaults',c:'bl f'},{t:'🔙 Back',c:'bk f'}],'Per source: Name 🟢ON (toggles) | 🕒 freq | 🗑 delete. news_add / news_trade_defaults / back_to_dashboard.',2);
+html+=P('news_hub','📰 Event Trading',`📰 <b>Event Trading — Event Trading</b>\n\nAI-analyzed news with one-tap trade buttons.\n\n✅ <b>BWEnews</b> — 5/hr`,[{t:'BWEnews 🟢ON',c:'gn',w:'t'},{t:'🕒',c:'gy',w:'q'},{t:'🗑',c:'gy',w:'q'},{t:'➕ Add News Source',c:'bl f'},{t:'⚙️ Trade Defaults',c:'bl f'},{t:'🔙 Back',c:'bk f'}],'Also: /event. Per source: Name 🟢ON (toggles) | 🕒 freq | 🗑 delete. news_add / news_trade_defaults / back_to_dashboard.',2);
 html+=`</div>`;
 
 // --- Hub sub-screens ---
@@ -256,44 +256,9 @@ html+=`</div></div>`;
 html+=`</div></div>`;
 
 // ═══════════════════════════════════════
-// STANDALONE SLASH COMMANDS
+// STANDALONE-ONLY COMMANDS (/help, /feedback)
 // ═══════════════════════════════════════
-html+=`<div class="module"><div class="mod-hdr m-trade"><div class="ic">⌨️</div><div class="inf"><h2>Slash Commands (standalone)</h2><p>Direct commands from chat input. Same data as Trade Hub / AI Hub sub-screens but accessible without navigating the dashboard.</p></div></div>`;
-
-// /status
-html+=`<div class="flow-section"><div class="flow-label">/status — Account Status</div><div class="flow-row">`;
-html+=P('cmd_status','/status',`📊 <b>Account Status</b>\n\n├ Equity: <code>$1,234.56</code>\n└ Available: <code>$890.12</code>\n\n📈 <b>Open Positions (2):</b>\n\n⬆️ <b>BTC</b> LONG <code>0.01</code>\n  Entry: <code>$71,200.0000</code> | PnL: <code>+$12.30</code>\n  Liq: <code>$68,500</code>\n\n⬇️ <b>ETH</b> SHORT <code>0.5</code>\n  Entry: <code>$3,000.0000</code> | PnL: <code>-$5.20</code>\n  Liq: <code>$3,450</code>`,[{t:'🚀 Start',c:'bk f'}],'Direct command. Same data as Trade Hub. Reply bound to user message.',1);
-html+=`</div></div>`;
-
-// /pnl
-html+=`<div class="flow-section"><div class="flow-label">/pnl — Daily P&L Report</div><div class="flow-row">`;
-html+=P('cmd_pnl','/pnl',`============================\n📊  <b>edgeX Agent Daily Report</b>\n============================\n\n├ Realized: <code>+$12.30</code>\n├ Unrealized: <code>-$5.20</code>\n├ Total: <code>+$7.10</code>\n├ Win Rate: <code>60%</code> (3W/2L)\n└ Trades: <code>5</code>\n\n============================`,[{t:'🚀 Start',c:'bk f'}],'Daily P&L with win rate and trade count.',1);
-html+=`</div></div>`;
-
-// /history
-html+=`<div class="flow-section"><div class="flow-label">/history — Recent Trades</div><div class="flow-row">`;
-html+=P('cmd_history','/history',`📜 <b>Recent Trades (edgeX)</b>\n\n⬆️ BTC BUY LIMIT (5x) 0.01 @ $71,234.00 | PnL: +$2.3400 | 03/05 08:00\n⬇️ DOGE SELL MARKET (3x) 300 @ $0.09600 | PnL: -$0.0300 | 03/05 07:30\n⬆️ SOL BUY MARKET (2x) 5 @ $142.50 | PnL: +$8.7500 | 03/04 15:20`,[{t:'🚀 Start',c:'bk f'}],'Up to 10 recent fills. Type + leverage shown.',1);
-html+=`</div></div>`;
-
-// /orders
-html+=`<div class="flow-section"><div class="flow-label">/orders — Open Orders</div><div class="flow-row">`;
-html+=P('cmd_orders','/orders',`📋 <b>Open Orders</b>\n\n2 order(s):\n\n  • BTC BUY LIMIT (5x) | Size: 100 | Price: $70,000 | Now: $71,234 (1.7% away)\n  • ETH SELL LIMIT (3x) | Size: 50 | Price: $4,100 | Now: $3,950 (3.8% away)`,[{t:'❌ Cancel BTC BUY 100@70000',c:'rd f'},{t:'❌ Cancel ETH SELL 50@4100',c:'rd f'},{t:'❌ Cancel All Orders',c:'rd f'},{t:'🚀 Start',c:'bk f'}],'Same as Trade Hub → Orders. Cancel flows use same modals.',1);
-html+=`</div></div>`;
-
-// /close
-html+=`<div class="flow-section"><div class="flow-label">/close — Close Position</div><div class="flow-row">`;
-html+=P('cmd_close','/close',`💰 <b>Close Position</b>\n\n⬆️ <b>BTC LONG</b> (5x)\n  ├ Value: <code>$712.00</code> | Entry: <code>$71,200.00</code>\n  └ PnL: <code>+$12.30</code>\n\n⬇️ <b>ETH SHORT</b> (3x)\n  ├ Value: <code>$1,500.00</code> | Entry: <code>$3,000.00</code>\n  └ PnL: <code>-$5.20</code>`,[{t:'🔴 Market Close BTC LONG',c:'rd f'},{t:'🔴 Market Close ETH SHORT',c:'rd f'},{t:'🔴 Market Close All',c:'rd f'},{t:'🚀 Start',c:'bk f'}],'Same close confirmation modals as Trade Hub.',1);
-html+=`</div></div>`;
-
-// /memory
-html+=`<div class="flow-section"><div class="flow-label">/memory — Agent Memory</div><div class="flow-row">`;
-html+=P('cmd_memory','/memory',`📝 <b>Memory</b>\n\n├ Messages: <code>180</code>\n└ Summaries: <code>24</code>\n├ Since: <code>2026-03-06 04:56</code>\n\n📋 <b>What I Know About You:</b>\n  • Style: aggressive\n  • Favorites: BTC, SOL, DOGE\n  • Risk: high\n\nYour Agent remembers past conversations and learns your preferences over time. The more you chat, the more personalized your experience becomes.`,[{t:'🗑 Clear Memory',c:'rd'},{t:'🔙 Back',c:'bk'}],'Shows msg count, summaries, learned preferences. Clear = modal confirm.',1);
-html+=`</div></div>`;
-
-// /event
-html+=`<div class="flow-section"><div class="flow-label">/event — Event Trading</div><div class="flow-row">`;
-html+=P('cmd_event','/event',`📰 <b>Event Trading — Event Trading</b>\n\nAI-analyzed news with one-tap trade buttons.\n\n✅ <b>BWEnews</b> — 5/hr`,[{t:'BWEnews 🟢ON',c:'gn',w:'t'},{t:'🕒',c:'gy',w:'q'},{t:'🗑',c:'gy',w:'q'},{t:'➕ Add News Source',c:'bl f'},{t:'⚙️ Trade Defaults',c:'bl f'},{t:'🔙 Back',c:'bk f'}],'Same as Dashboard → Event Trading.',1);
-html+=`</div></div>`;
+html+=`<div class="module"><div class="mod-hdr m-trade"><div class="ic">⌨️</div><div class="inf"><h2>Standalone Commands</h2><p>/help and /feedback — these have no equivalent in any dashboard module, so they only exist as slash commands.</p></div></div>`;
 
 // /help
 html+=`<div class="flow-section"><div class="flow-label">/help — Command Reference</div><div class="flow-row">`;
@@ -305,11 +270,6 @@ html+=`<div class="flow-section"><div class="flow-label">/feedback — Send Feed
 html+=P('cmd_feedback_prompt','/feedback',`💬 <b>Feedback</b>\n\nTell us what you'd like to see, or what's not working well.\nType your message below — it goes straight to the team:`,[],'No buttons. Waits for user text input. Min 3 chars.',1);
 html+=A('user types');
 html+=P('cmd_feedback_done','✅ Recorded',`✅ <b>Got it!</b> Your feedback has been recorded. Thanks!`,[{t:'🚀 Start',c:'bk f'}],'Feedback saved to DB. Start button to return.',1);
-html+=`</div></div>`;
-
-// /logout
-html+=`<div class="flow-section"><div class="flow-label">/logout — Disconnect Account</div><div class="flow-row">`;
-html+=P('cmd_logout','/logout',`🚪 <b>Disconnect</b>\n\nThis will log out your edgeX account.\nAre you sure?`,[{t:'✅ Yes, logout',c:'rd'},{t:'❌ Cancel',c:'gy'}],'Same modal flow as Trade Hub → Disconnect.',1);
 html+=`</div></div>`;
 
 html+=`</div>`;
