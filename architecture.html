@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>edgeX Agent — Technical Architecture</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
+:root{
+--bg:#06080e;--s:#0c0f18;--s2:#111522;--b:#1a1e2c;--bh:#252a3c;
+--t:#e8eaf0;--t2:#a0a6b8;--m:#6a7090;--d:#303650;
+--g:#00e878;--gd:rgba(0,232,120,0.06);--gm:rgba(0,232,120,0.12);
+--bl:#5898ff;--bld:rgba(88,152,255,0.06);--blm:rgba(88,152,255,0.12);
+--y:#f0c020;--yd:rgba(240,192,32,0.06);
+--r:#ff4060;--rd:rgba(255,64,96,0.06);
+--p:#b080ff;--pd:rgba(176,128,255,0.06);
+--mono:'JetBrains Mono',monospace;--sans:'Inter',-apple-system,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--bg);color:var(--t);line-height:1.7;-webkit-font-smoothing:antialiased;}
+::selection{background:rgba(0,232,120,0.15);color:#fff;}
+a{color:var(--bl);text-decoration:none;}a:hover{text-decoration:underline;}
+
+/* nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 40px;height:52px;display:flex;align-items:center;justify-content:space-between;background:rgba(6,8,14,0.85);backdrop-filter:blur(24px);border-bottom:1px solid var(--b);}
+.logo{font-family:var(--mono);font-size:0.95em;font-weight:700;color:var(--t);display:flex;align-items:center;gap:8px;}
+.logo svg{width:18px;height:18px;}
+.nav-links{display:flex;gap:20px;align-items:center;}
+.nav-links a{font-family:var(--mono);font-size:0.68em;color:var(--m);transition:color .2s;}
+.nav-links a:hover{color:var(--t);text-decoration:none;}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-family:var(--mono);font-size:0.6em;font-weight:600;letter-spacing:0.5px;}
+.badge-g{background:var(--gd);color:var(--g);border:1px solid var(--gm);}
+.badge-b{background:var(--bld);color:var(--bl);border:1px solid var(--blm);}
+.badge-y{background:var(--yd);color:var(--y);border:1px solid rgba(240,192,32,0.15);}
+.badge-r{background:var(--rd);color:var(--r);border:1px solid rgba(255,64,96,0.15);}
+.badge-p{background:var(--pd);color:var(--p);border:1px solid rgba(176,128,255,0.15);}
+
+.container{max-width:1100px;margin:0 auto;padding:0 40px;}
+
+/* hero */
+.hero{padding:100px 40px 60px;max-width:1100px;margin:0 auto;}
+.hero h1{font-size:2.8em;font-weight:800;letter-spacing:-2px;line-height:1.1;margin-bottom:12px;}
+.hero h1 .hl{color:var(--g);}
+.hero-sub{font-size:1.05em;color:var(--t2);max-width:700px;line-height:1.8;margin-bottom:24px;}
+.hero-meta{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:8px;}
+.hero-meta .badge{font-size:0.65em;}
+
+/* section */
+.sec{padding:80px 0;border-top:1px solid var(--b);}
+.stag{font-family:var(--mono);font-size:0.62em;color:var(--g);letter-spacing:2px;opacity:0.6;margin-bottom:14px;}
+.sh{font-size:1.8em;font-weight:800;letter-spacing:-1.5px;line-height:1.2;margin-bottom:8px;}
+.sd{font-size:0.92em;color:var(--m);max-width:600px;line-height:1.8;margin-bottom:32px;}
+
+/* diagram box */
+.diagram{background:var(--s);border:1px solid var(--b);border-radius:14px;padding:32px;overflow-x:auto;margin-bottom:32px;}
+.diagram-title{font-family:var(--mono);font-size:0.7em;color:var(--m);letter-spacing:1px;margin-bottom:20px;}
+
+/* architecture diagram */
+.arch-row{display:flex;gap:12px;align-items:stretch;flex-wrap:wrap;margin-bottom:12px;}
+.arch-box{background:var(--s2);border:1px solid var(--b);border-radius:10px;padding:14px 18px;flex:1;min-width:140px;transition:border-color .2s;}
+.arch-box:hover{border-color:var(--bh);}
+.arch-box .ab-icon{font-size:1.4em;margin-bottom:6px;}
+.arch-box .ab-name{font-family:var(--mono);font-size:0.78em;font-weight:700;margin-bottom:4px;}
+.arch-box .ab-desc{font-size:0.72em;color:var(--m);line-height:1.5;}
+.arch-box .ab-file{font-family:var(--mono);font-size:0.6em;color:var(--d);margin-top:6px;}
+.arch-box.primary{border-color:rgba(0,232,120,0.2);background:linear-gradient(135deg,rgba(0,232,120,0.03),transparent);}
+.arch-box.secondary{border-color:rgba(88,152,255,0.15);background:linear-gradient(135deg,rgba(88,152,255,0.02),transparent);}
+.arch-box.accent{border-color:rgba(240,192,32,0.15);background:linear-gradient(135deg,rgba(240,192,32,0.02),transparent);}
+.arch-box.danger{border-color:rgba(255,64,96,0.12);background:linear-gradient(135deg,rgba(255,64,96,0.02),transparent);}
+.arch-box.purple{border-color:rgba(176,128,255,0.15);background:linear-gradient(135deg,rgba(176,128,255,0.02),transparent);}
+.arch-arrow{display:flex;align-items:center;justify-content:center;color:var(--d);font-size:1.4em;padding:0 4px;flex-shrink:0;}
+.arch-arrow-down{text-align:center;color:var(--d);font-size:1.4em;padding:6px 0;}
+.arch-label{font-family:var(--mono);font-size:0.58em;color:var(--d);text-align:center;padding:2px 0;}
+
+/* table */
+.tbl{width:100%;border-collapse:collapse;margin-bottom:24px;font-size:0.84em;}
+.tbl th,.tbl td{border:1px solid var(--b);padding:10px 14px;text-align:left;vertical-align:top;}
+.tbl th{background:var(--s);font-family:var(--mono);font-size:0.82em;font-weight:600;color:var(--t2);letter-spacing:0.3px;}
+.tbl td{color:var(--t2);}
+.tbl code{font-family:var(--mono);font-size:0.88em;background:var(--s);padding:2px 5px;border-radius:3px;color:var(--g);}
+.tbl .fname{font-family:var(--mono);font-weight:600;color:var(--t);}
+.tbl tr:hover td{background:rgba(255,255,255,0.01);}
+
+/* code block */
+.code-block{background:#080b14;border:1px solid var(--b);border-radius:10px;padding:18px;font-family:var(--mono);font-size:0.76em;line-height:1.8;overflow-x:auto;margin-bottom:20px;color:var(--t2);}
+.code-block .cm{color:#4a5580;}.code-block .kw{color:var(--bl);}.code-block .fn{color:var(--g);}.code-block .st{color:var(--y);}.code-block .num{color:var(--p);}
+
+/* flow */
+.flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:16px 0;}
+.flow-step{background:var(--s2);border:1px solid var(--b);border-radius:8px;padding:8px 14px;font-family:var(--mono);font-size:0.72em;color:var(--t2);}
+.flow-step.hl-g{border-color:rgba(0,232,120,0.2);color:var(--g);}
+.flow-step.hl-b{border-color:rgba(88,152,255,0.15);color:var(--bl);}
+.flow-step.hl-y{border-color:rgba(240,192,32,0.15);color:var(--y);}
+.flow-step.hl-r{border-color:rgba(255,64,96,0.12);color:var(--r);}
+.flow-arr{color:var(--d);font-size:0.9em;}
+
+/* stats grid */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:32px;}
+.stat{background:var(--s);border:1px solid var(--b);border-radius:10px;padding:18px;}
+.stat-val{font-family:var(--mono);font-size:1.6em;font-weight:800;color:var(--t);margin-bottom:2px;}
+.stat-label{font-size:0.72em;color:var(--m);}
+
+/* schema */
+.schema{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:24px;}
+.schema-tbl{background:var(--s);border:1px solid var(--b);border-radius:10px;overflow:hidden;}
+.schema-tbl .st-hdr{background:var(--s2);padding:10px 14px;font-family:var(--mono);font-size:0.78em;font-weight:700;border-bottom:1px solid var(--b);}
+.schema-tbl .st-row{padding:5px 14px;font-family:var(--mono);font-size:0.7em;color:var(--t2);border-bottom:1px solid rgba(26,30,44,0.5);display:flex;justify-content:space-between;}
+.schema-tbl .st-row:last-child{border-bottom:none;}
+.schema-tbl .st-row .pk{color:var(--y);}
+.schema-tbl .st-row .type{color:var(--m);font-size:0.9em;}
+
+/* security */
+.sec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:24px;}
+.sec-item{background:var(--s);border:1px solid var(--b);border-radius:10px;padding:18px;}
+.sec-item .si-icon{font-size:1.3em;margin-bottom:8px;}
+.sec-item h4{font-size:0.88em;font-weight:700;margin-bottom:4px;}
+.sec-item p{font-size:0.78em;color:var(--m);line-height:1.6;}
+
+/* infra */
+.infra-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;}
+.infra-item{background:var(--s);border:1px solid var(--b);border-radius:10px;padding:18px;}
+.infra-item .ii-hdr{font-family:var(--mono);font-size:0.78em;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.infra-item p{font-size:0.76em;color:var(--m);line-height:1.6;}
+.infra-item code{font-family:var(--mono);font-size:0.9em;color:var(--g);background:var(--s2);padding:1px 4px;border-radius:3px;}
+
+footer{border-top:1px solid var(--b);padding:28px 40px;max-width:1100px;margin:0 auto;font-family:var(--mono);font-size:0.62em;color:var(--d);display:flex;justify-content:space-between;}
+
+@media(max-width:768px){
+  .container,.hero{padding-left:20px;padding-right:20px;}
+  nav{padding:0 16px;}
+  .hero h1{font-size:1.8em;}
+  .arch-row{flex-direction:column;}
+  .arch-arrow{transform:rotate(90deg);}
+  footer{flex-direction:column;gap:8px;padding:24px 20px;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo"><svg viewBox="0 0 207 180" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M206.98 179.25L103.49 0L0 179.25H163.15H206.98ZM21.9 141.381L125.342 38L163.15 179.25L21.9 141.381Z" fill="white"/></svg> edgeX Agent</a>
+  <div class="nav-links">
+    <a href="#overview">Overview</a>
+    <a href="#modules">Modules</a>
+    <a href="#data">Data Flow</a>
+    <a href="#schema">Schema</a>
+    <a href="#security">Security</a>
+    <a href="#infra">Infrastructure</a>
+  </div>
+</nav>
+
+<!-- ══════════ HERO ══════════ -->
+<div class="hero">
+  <h1>Technical <span class="hl">Architecture</span></h1>
+  <p class="hero-sub">edgeX Agent is an AI-powered trading agent running inside Telegram. It connects to the edgeX perpetual contract exchange, processes real-time news via MCP, and executes trades through natural language — all from a single long-polling bot process.</p>
+  <div class="hero-meta">
+    <span class="badge badge-g">Python 3.11</span>
+    <span class="badge badge-b">python-telegram-bot 22.5</span>
+    <span class="badge badge-y">SQLite</span>
+    <span class="badge badge-p">edgeX Python SDK</span>
+    <span class="badge badge-r">Fernet AES-128</span>
+  </div>
+</div>
+
+<!-- ══════════ OVERVIEW ══════════ -->
+<section class="sec" id="overview">
+<div class="container">
+  <div class="stag">// system overview</div>
+  <h2 class="sh">High-Level Architecture</h2>
+  <p class="sd">Two long-running processes, one SQLite database, three external integrations. No web server required for core functionality.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-val">3,674</div><div class="stat-label">Lines — main.py (bot core)</div></div>
+    <div class="stat"><div class="stat-val">991</div><div class="stat-label">Lines — ai_trader.py</div></div>
+    <div class="stat"><div class="stat-val">639</div><div class="stat-label">Lines — db.py</div></div>
+    <div class="stat"><div class="stat-val">514</div><div class="stat-label">Lines — news_push.py</div></div>
+    <div class="stat"><div class="stat-val">495</div><div class="stat-label">Lines — edgex_client.py</div></div>
+    <div class="stat"><div class="stat-val">290+</div><div class="stat-label">Tradeable assets</div></div>
+  </div>
+
+  <div class="diagram">
+    <div class="diagram-title">SYSTEM TOPOLOGY</div>
+
+    <!-- Layer 1: User -->
+    <div class="arch-row" style="justify-content:center;">
+      <div class="arch-box primary" style="max-width:280px;text-align:center;">
+        <div class="ab-icon">👤</div>
+        <div class="ab-name">Telegram User</div>
+        <div class="ab-desc">Natural language input in any language. Receives inline keyboard buttons for trade confirmation, news alerts, portfolio management.</div>
+      </div>
+    </div>
+    <div class="arch-arrow-down">↕</div>
+    <div class="arch-label">Telegram Bot API (long polling)</div>
+
+    <!-- Layer 2: Bot Process -->
+    <div class="arch-row">
+      <div class="arch-box primary">
+        <div class="ab-icon">🤖</div>
+        <div class="ab-name">main.py</div>
+        <div class="ab-desc">Bot core. ConversationHandler for login, AI setup. CommandHandlers for /status, /pnl, /history, /close, /orders. CallbackQueryHandler for all inline buttons. MessageHandler for AI chat.</div>
+        <div class="ab-file">3,674 lines · PTB Application</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box secondary">
+        <div class="ab-icon">🧠</div>
+        <div class="ab-name">ai_trader.py</div>
+        <div class="ab-desc">AI inference engine. Builds system prompt with live market data, user memory, edgex-cli docs. Calls LLM API (OpenAI/Anthropic/Gemini/Droid). Parses CHAT or TRADE JSON response.</div>
+        <div class="ab-file">991 lines · multi-provider</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box accent">
+        <div class="ab-icon">📰</div>
+        <div class="ab-name">news_push.py</div>
+        <div class="ab-desc">Background polling loop. Fetches articles from MCP servers, deduplicates by hash, AI-analyzes sentiment/asset/direction, generates trade buttons, pushes to subscribers.</div>
+        <div class="ab-file">514 lines · async loop</div>
+      </div>
+    </div>
+    <div class="arch-arrow-down">↕</div>
+
+    <!-- Layer 3: Data & External -->
+    <div class="arch-row">
+      <div class="arch-box" style="border-color:rgba(240,192,32,0.2);">
+        <div class="ab-icon">🗄️</div>
+        <div class="ab-name">SQLite</div>
+        <div class="ab-desc">Single file database. Users, trades, conversations, memory summaries, preferences, news sources, subscriptions, delivery tracking.</div>
+        <div class="ab-file">db.py · 639 lines · 9 tables</div>
+      </div>
+      <div class="arch-box secondary">
+        <div class="ab-icon">📊</div>
+        <div class="ab-name">edgex_client.py</div>
+        <div class="ab-desc">Exchange wrapper. Python SDK for account ops + edgex-cli subprocess for market data. Symbol resolution, contract metadata, order placement with TP/SL.</div>
+        <div class="ab-file">495 lines · SDK + CLI hybrid</div>
+      </div>
+      <div class="arch-box purple">
+        <div class="ab-icon">💾</div>
+        <div class="ab-name">memory.py</div>
+        <div class="ab-desc">3-tier memory: T0 working (last 16 msgs), T1 short-term (session summaries), T2 long-term (user preferences). Keyword-based retrieval, AI-powered summarization.</div>
+        <div class="ab-file">300 lines · per-user</div>
+      </div>
+    </div>
+    <div class="arch-arrow-down">↕</div>
+
+    <!-- Layer 4: External Services -->
+    <div class="arch-row">
+      <div class="arch-box danger">
+        <div class="ab-icon">⚡</div>
+        <div class="ab-name">edgeX Exchange</div>
+        <div class="ab-desc">Perpetual contract DEX. REST API via Python SDK. CLI via edgex-cli (npm). 290+ contracts: crypto, US equities, commodities, indices.</div>
+        <div class="ab-file">pro.edgex.exchange</div>
+      </div>
+      <div class="arch-box purple">
+        <div class="ab-icon">🔮</div>
+        <div class="ab-name">LLM Providers</div>
+        <div class="ab-desc">User-configurable: OpenAI-compatible (DeepSeek, Groq, NVIDIA), Anthropic (Claude), Google Gemini. Also Factory Droid for free tier and news analysis.</div>
+        <div class="ab-file">httpx · async streaming</div>
+      </div>
+      <div class="arch-box accent">
+        <div class="ab-icon">📡</div>
+        <div class="ab-name">BWEnews MCP</div>
+        <div class="ab-desc">Standalone sidecar process. Polls @BWEnews Telegram channel via Telethon, serves articles over MCP JSON-RPC on localhost:8788.</div>
+        <div class="ab-file">bwenews_mcp.py · port 8788</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<!-- ══════════ MODULES ══════════ -->
+<section class="sec" id="modules">
+<div class="container">
+  <div class="stag">// module breakdown</div>
+  <h2 class="sh">Core Modules</h2>
+  <p class="sd">8 Python modules, 1 config, 1 migration script. No framework beyond PTB. All async.</p>
+
+  <table class="tbl">
+    <tr>
+      <th>File</th>
+      <th>Lines</th>
+      <th>Role</th>
+      <th>Key Responsibilities</th>
+    </tr>
+    <tr>
+      <td class="fname">main.py</td>
+      <td>3,674</td>
+      <td><span class="badge badge-g">Core</span></td>
+      <td>
+        PTB Application entry point. ConversationHandlers for /start login flow and /setai AI setup. 15 CommandHandlers. Single CallbackQueryHandler routing 50+ callback patterns. AI chat via MessageHandler. Rate limiter (15 msg/min). Stale AI request cancellation via <code>_pending_ai_tasks</code>. Smart reply buttons (asset detection → trade buttons). Trade plan confirmation/execution flow. News subscription management UI. Trade defaults configuration.
+      </td>
+    </tr>
+    <tr>
+      <td class="fname">ai_trader.py</td>
+      <td>991</td>
+      <td><span class="badge badge-b">AI</span></td>
+      <td>
+        System prompt construction with live market data injection (edgex-cli ticker queries cached 1h). 7 personality prompts (degen/sensei/coldblood/shitposter/professor/wolf/moe). Multi-provider LLM calls: OpenAI-compatible, Anthropic (Messages API), Google Gemini, Factory Droid. JSON parsing for CHAT/TRADE responses. Trade plan validation (mandatory TP/SL, max $500, max 5x leverage). Memory context injection.
+      </td>
+    </tr>
+    <tr>
+      <td class="fname">news_push.py</td>
+      <td>514</td>
+      <td><span class="badge badge-y">News</span></td>
+      <td>
+        Background async polling loop (started via <code>post_init</code>). MCP JSON-RPC client for fetching articles. SHA-256 deduplication. AI sentiment analysis via Factory Droid API. Trade button generation using user defaults (leverage, amounts, TP%, SL%). Real-time price fetching for news alerts. Per-user rate limiting per source. Silent push (<code>disable_notification=True</code>). Translation buttons (CN/JP/KR/RU).
+      </td>
+    </tr>
+    <tr>
+      <td class="fname">edgex_client.py</td>
+      <td>495</td>
+      <td><span class="badge badge-p">Exchange</span></td>
+      <td>
+        Dual interface: Python SDK (<code>edgex-python-sdk</code>) for authenticated operations + <code>edgex-cli</code> subprocess for market data. Dynamic contract ID resolution with 1h cache. Contract metadata cache (minOrderSize, stepSize). Order placement with TP/SL flags. Position management (close single, close all). Account summary aggregation. Symbol alias handling (GOLD→XAUT, XAG→SILVER).
+      </td>
+    </tr>
+    <tr>
+      <td class="fname">db.py</td>
+      <td>639</td>
+      <td><span class="badge badge-y">Data</span></td>
+      <td>
+        SQLite wrapper with 9 tables. Fernet field-level encryption for <code>stark_private_key</code> and <code>ai_api_key</code> (AES-128-CBC, key derived from SHA-256 of BOT_TOKEN). Transparent decrypt on read (legacy plaintext compatible via <code>enc:</code> prefix). User CRUD, trade logging, conversation storage, memory summaries, preference KV store, news source/subscription management, delivery dedup tracking.
+      </td>
+    </tr>
+    <tr>
+      <td class="fname">memory.py</td>
+      <td>300</td>
+      <td><span class="badge badge-p">Memory</span></td>
+      <td>
+        3-tier architecture inspired by OpenClaw. T0: working memory (last 16 messages, raw). T1: session summaries (AI-compressed after 10 turns). T2: long-term preferences (extracted every 30 messages). Keyword-based retrieval (LIKE queries). Context budget: 2,000 chars injected into AI prompt. Auto-cleanup at 500 stored messages.
+      </td>
+    </tr>
+    <tr>
+      <td class="fname">bwenews_mcp.py</td>
+      <td>242</td>
+      <td><span class="badge badge-y">Sidecar</span></td>
+      <td>
+        Standalone process. Polls @BWEnews Telegram channel every 30s via Telethon <code>get_messages</code>. Extracts headlines (filters CJK-heavy messages). Serves via MCP JSON-RPC on <code>localhost:8788</code>. Implements <code>tools/list</code> and <code>tools/call</code> with <code>get_bwenews</code> tool. 100-article ring buffer with seen-ID dedup.
+      </td>
+    </tr>
+    <tr>
+      <td class="fname">config.py</td>
+      <td>59</td>
+      <td><span class="badge badge-g">Config</span></td>
+      <td>
+        Environment loading via <code>python-dotenv</code>. Tool path resolution chain: env → <code>shutil.which</code> → hardcoded fallback. Safety constants: MAX_POSITION_USD=500, MAX_LEVERAGE=5, LOSS_CIRCUIT_BREAKER=20%. Static contract ID map (50+ symbols) with reverse lookup.
+      </td>
+    </tr>
+    <tr>
+      <td class="fname">feedback_web.py</td>
+      <td>386</td>
+      <td><span class="badge badge-b">Admin</span></td>
+      <td>
+        Standalone HTTP admin dashboard on port 8901. View/reply/resolve user feedback. Key-based authentication. Sends Telegram replies to users via Bot API. HTML template with status filters.
+      </td>
+    </tr>
+  </table>
+</div>
+</section>
+
+<!-- ══════════ DATA FLOW ══════════ -->
+<section class="sec" id="data">
+<div class="container">
+  <div class="stag">// data flow</div>
+  <h2 class="sh">Three Core Flows</h2>
+  <p class="sd">Every user interaction follows one of three paths: AI chat, event-driven trading, or direct exchange control.</p>
+
+  <!-- Flow 1: AI Chat → Trade -->
+  <h3 style="font-size:1.1em;font-weight:700;margin-bottom:12px;">1. AI Chat → Trade Execution</h3>
+  <div class="flow">
+    <div class="flow-step hl-g">User message</div>
+    <span class="flow-arr">→</span>
+    <div class="flow-step">Rate limit check</div>
+    <span class="flow-arr">→</span>
+    <div class="flow-step">Cancel stale AI task</div>
+    <span class="flow-arr">→</span>
+    <div class="flow-step hl-b">Build prompt (memory + market data + personality)</div>
+    <span class="flow-arr">→</span>
+    <div class="flow-step hl-b">LLM API call</div>
+    <span class="flow-arr">→</span>
+    <div class="flow-step">Parse JSON (CHAT/TRADE)</div>
+  </div>
+  <div class="flow">
+    <div class="flow-step" style="visibility:hidden;">spacer</div>
+    <span class="flow-arr" style="visibility:hidden;">→</span>
+    <div class="flow-step hl-g">CHAT → reply with smart buttons</div>
+    <span class="flow-arr">or</span>
+    <div class="flow-step hl-y">TRADE → Confirm/Cancel buttons</div>
+    <span class="flow-arr">→</span>
+    <div class="flow-step hl-r">edgex-cli order create --tp --sl</div>
+    <span class="flow-arr">→</span>
+    <div class="flow-step hl-g">Result (edit in place)</div>
+  </div>
+
+  <div class="code-block"><span class="cm">// Stale request cancellation — when user sends new msg, old AI task is discarded</span>
+<span class="kw">if</span> user_id <span class="kw">in</span> _pending_ai_tasks:
+    _pending_ai_tasks[user_id].<span class="fn">set</span>()          <span class="cm">// signal old task to stop</span>
+cancel_event = asyncio.Event()
+_pending_ai_tasks[user_id] = cancel_event
+response = <span class="kw">await</span> ai_trader.<span class="fn">get_ai_response</span>(...)
+<span class="kw">if</span> cancel_event.<span class="fn">is_set</span>():
+    <span class="kw">return</span>                                   <span class="cm">// discard — user already sent new msg</span>
+<span class="kw">await</span> context.bot.<span class="fn">send_message</span>(
+    reply_to_message_id=orig_msg_id, ...)   <span class="cm">// bind reply to original</span></div>
+
+  <!-- Flow 2: Event Trading -->
+  <h3 style="font-size:1.1em;font-weight:700;margin:32px 0 12px;">2. Event Trading (News → Trade)</h3>
+  <div class="flow">
+    <div class="flow-step hl-y">BWEnews MCP</div>
+    <span class="flow-arr">→</span>
+    <div class="flow-step">news_push poll (30s)</div>
+    <span class="flow-arr">→</span>
+    <div class="flow-step">SHA-256 dedup</div>
+    <span class="flow-arr">→</span>
+    <div class="flow-step hl-b">AI sentiment analysis (Droid API)</div>
+    <span class="flow-arr">→</span>
+    <div class="flow-step">Resolve asset + direction</div>
+  </div>
+  <div class="flow">
+    <div class="flow-step" style="visibility:hidden;">spacer</div>
+    <span class="flow-arr">→</span>
+    <div class="flow-step hl-g">Fetch live price (edgex-cli)</div>
+    <span class="flow-arr">→</span>
+    <div class="flow-step">Calculate TP/SL from user defaults</div>
+    <span class="flow-arr">→</span>
+    <div class="flow-step hl-y">Push to all subscribers (silent)</div>
+    <span class="flow-arr">→</span>
+    <div class="flow-step hl-g">Trade buttons (LONG/SHORT × 3 tiers)</div>
+  </div>
+
+  <div class="code-block"><span class="cm">// News alert format (after AI analysis)</span>
+<span class="st">*{title}*</span>
+
+<span class="st">🟢 {asset} | BULLISH | ███ HIGH</span>
+<span class="st">[Source]({url})</span>
+
+<span class="cm">// Buttons: 3 tiers from user Trade Defaults</span>
+<span class="st">[⬆️ LONG BTC $50 3x | TP $75,819 SL $67,395]</span>
+<span class="st">[⬆️ LONG BTC $100 3x | TP $75,819 SL $67,395]</span>
+<span class="st">[⬆️ LONG BTC $200 3x | TP $75,819 SL $67,395]</span>
+<span class="st">[🇨🇳] [🇯🇵] [🇰🇷] [🇷🇺]</span>  <span class="cm">// translation buttons</span></div>
+
+  <!-- Flow 3: Exchange Control -->
+  <h3 style="font-size:1.1em;font-weight:700;margin:32px 0 12px;">3. Direct Exchange Control</h3>
+  <div class="flow">
+    <div class="flow-step hl-g">/status</div>
+    <span class="flow-arr">→</span>
+    <div class="flow-step">edgex SDK: account summary</div>
+    <span class="flow-arr">→</span>
+    <div class="flow-step">Equity, positions, unrealized P&L</div>
+  </div>
+  <div class="flow">
+    <div class="flow-step hl-g">/close</div>
+    <span class="flow-arr">→</span>
+    <div class="flow-step">List positions</div>
+    <span class="flow-arr">→</span>
+    <div class="flow-step hl-r">Confirm modal (new msg)</div>
+    <span class="flow-arr">→</span>
+    <div class="flow-step">Market close via SDK</div>
+    <span class="flow-arr">→</span>
+    <div class="flow-step hl-g">Result with realized P&L</div>
+  </div>
+  <div class="flow">
+    <div class="flow-step hl-g">/pnl</div>
+    <span class="flow-arr">→</span>
+    <div class="flow-step">Aggregate realized + unrealized</div>
+    <span class="flow-arr">→</span>
+    <div class="flow-step">Daily report with win rate</div>
+  </div>
+  <div class="flow">
+    <div class="flow-step hl-g">/history</div>
+    <span class="flow-arr">→</span>
+    <div class="flow-step">Recent fills with side, size, price, P&L</div>
+  </div>
+  <div class="flow">
+    <div class="flow-step hl-g">/orders</div>
+    <span class="flow-arr">→</span>
+    <div class="flow-step">Active orders with cancel buttons</div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════ SCHEMA ══════════ -->
+<section class="sec" id="schema">
+<div class="container">
+  <div class="stag">// database schema</div>
+  <h2 class="sh">SQLite Schema</h2>
+  <p class="sd">Single file — edgex_agent.db. 9 tables. No ORM. Direct sqlite3 with Row factory.</p>
+
+  <div class="schema">
+    <div class="schema-tbl">
+      <div class="st-hdr">👤 users</div>
+      <div class="st-row"><span><span class="pk">PK</span> tg_user_id</span><span class="type">INTEGER</span></div>
+      <div class="st-row"><span>account_id</span><span class="type">TEXT</span></div>
+      <div class="st-row"><span>stark_private_key</span><span class="type">TEXT 🔐</span></div>
+      <div class="st-row"><span>ai_api_key</span><span class="type">TEXT 🔐</span></div>
+      <div class="st-row"><span>ai_base_url</span><span class="type">TEXT</span></div>
+      <div class="st-row"><span>ai_model</span><span class="type">TEXT</span></div>
+      <div class="st-row"><span>personality</span><span class="type">TEXT</span></div>
+      <div class="st-row"><span>created_at</span><span class="type">REAL</span></div>
+    </div>
+    <div class="schema-tbl">
+      <div class="st-hdr">📊 trades</div>
+      <div class="st-row"><span><span class="pk">PK</span> id</span><span class="type">INTEGER AUTO</span></div>
+      <div class="st-row"><span>tg_user_id</span><span class="type">INTEGER</span></div>
+      <div class="st-row"><span>order_id</span><span class="type">TEXT</span></div>
+      <div class="st-row"><span>contract_id</span><span class="type">TEXT</span></div>
+      <div class="st-row"><span>side / size / price</span><span class="type">TEXT</span></div>
+      <div class="st-row"><span>status / pnl / thesis</span><span class="type">TEXT</span></div>
+      <div class="st-row"><span>created_at / updated_at</span><span class="type">REAL</span></div>
+    </div>
+    <div class="schema-tbl">
+      <div class="st-hdr">💬 conversations</div>
+      <div class="st-row"><span><span class="pk">PK</span> id</span><span class="type">INTEGER AUTO</span></div>
+      <div class="st-row"><span>tg_user_id</span><span class="type">INTEGER</span></div>
+      <div class="st-row"><span>role</span><span class="type">TEXT</span></div>
+      <div class="st-row"><span>content</span><span class="type">TEXT</span></div>
+      <div class="st-row"><span>metadata</span><span class="type">JSON</span></div>
+      <div class="st-row"><span>created_at</span><span class="type">REAL</span></div>
+    </div>
+    <div class="schema-tbl">
+      <div class="st-hdr">🧠 memory_summaries</div>
+      <div class="st-row"><span><span class="pk">PK</span> id</span><span class="type">INTEGER AUTO</span></div>
+      <div class="st-row"><span>tg_user_id</span><span class="type">INTEGER</span></div>
+      <div class="st-row"><span>summary / keywords</span><span class="type">TEXT</span></div>
+      <div class="st-row"><span>turn_count</span><span class="type">INTEGER</span></div>
+      <div class="st-row"><span>period_start / period_end</span><span class="type">REAL</span></div>
+    </div>
+    <div class="schema-tbl">
+      <div class="st-hdr">⚙️ user_preferences</div>
+      <div class="st-row"><span><span class="pk">PK</span> tg_user_id</span><span class="type">INTEGER</span></div>
+      <div class="st-row"><span>preferences</span><span class="type">JSON</span></div>
+      <div class="st-row"><span>updated_at</span><span class="type">REAL</span></div>
+    </div>
+    <div class="schema-tbl">
+      <div class="st-hdr">📰 news_sources</div>
+      <div class="st-row"><span><span class="pk">PK</span> id</span><span class="type">TEXT</span></div>
+      <div class="st-row"><span>name / mcp_url / mcp_tool</span><span class="type">TEXT</span></div>
+      <div class="st-row"><span>category</span><span class="type">TEXT</span></div>
+      <div class="st-row"><span>is_default / enabled</span><span class="type">INTEGER</span></div>
+      <div class="st-row"><span>poll_interval_sec</span><span class="type">INTEGER</span></div>
+    </div>
+    <div class="schema-tbl">
+      <div class="st-hdr">🔔 news_subscriptions</div>
+      <div class="st-row"><span><span class="pk">PK</span> tg_user_id + source_id</span><span class="type">COMPOSITE</span></div>
+      <div class="st-row"><span>enabled</span><span class="type">INTEGER</span></div>
+      <div class="st-row"><span>max_per_hour</span><span class="type">INTEGER</span></div>
+    </div>
+    <div class="schema-tbl">
+      <div class="st-hdr">📬 news_delivered</div>
+      <div class="st-row"><span><span class="pk">PK</span> id</span><span class="type">INTEGER AUTO</span></div>
+      <div class="st-row"><span>news_hash</span><span class="type">TEXT (SHA-256)</span></div>
+      <div class="st-row"><span>tg_user_id</span><span class="type">INTEGER</span></div>
+      <div class="st-row"><span>title / source_id / ai_analysis</span><span class="type">TEXT</span></div>
+      <div class="st-row"><span>delivered_at</span><span class="type">REAL</span></div>
+    </div>
+    <div class="schema-tbl">
+      <div class="st-hdr">🔢 ai_usage</div>
+      <div class="st-row"><span><span class="pk">PK</span> tg_user_id + date</span><span class="type">COMPOSITE</span></div>
+      <div class="st-row"><span>count</span><span class="type">INTEGER</span></div>
+    </div>
+  </div>
+
+  <div class="code-block"><span class="cm">// Encryption — transparent on read/write</span>
+<span class="kw">def</span> <span class="fn">_encrypt</span>(plaintext):
+    <span class="kw">if</span> plaintext.startswith(<span class="st">"enc:"</span>): <span class="kw">return</span> plaintext  <span class="cm">// already encrypted</span>
+    <span class="kw">return</span> <span class="st">"enc:"</span> + fernet.encrypt(plaintext)
+
+<span class="kw">def</span> <span class="fn">_decrypt</span>(ciphertext):
+    <span class="kw">if not</span> ciphertext.startswith(<span class="st">"enc:"</span>): <span class="kw">return</span> ciphertext  <span class="cm">// legacy plaintext</span>
+    <span class="kw">return</span> fernet.decrypt(ciphertext[<span class="num">4</span>:])
+
+<span class="cm">// Key derivation: SHA-256(TELEGRAM_BOT_TOKEN) → base64 → Fernet key</span></div>
+</div>
+</section>
+
+<!-- ══════════ SECURITY ══════════ -->
+<section class="sec" id="security">
+<div class="container">
+  <div class="stag">// security</div>
+  <h2 class="sh">Security Model</h2>
+  <p class="sd">Field-level encryption, trade confirmation, safety limits, and key auto-deletion from chat.</p>
+
+  <div class="sec-grid">
+    <div class="sec-item">
+      <div class="si-icon">🔐</div>
+      <h4>Fernet Encryption at Rest</h4>
+      <p><code>stark_private_key</code> and <code>ai_api_key</code> encrypted with AES-128-CBC via Fernet. Key derived from SHA-256 of TELEGRAM_BOT_TOKEN. All 3 users migrated, verified <code>enc:</code> prefix.</p>
+    </div>
+    <div class="sec-item">
+      <div class="si-icon">🗑️</div>
+      <h4>Key Auto-Deletion</h4>
+      <p>When user sends their L2 private key, the bot immediately deletes the message from Telegram chat via <code>deleteMessage</code>. Key never persists in chat history.</p>
+    </div>
+    <div class="sec-item">
+      <div class="si-icon">✅</div>
+      <h4>Mandatory Trade Confirmation</h4>
+      <p>Every trade shows a plan with entry, TP, SL, size, leverage, and reasoning. User must tap "Confirm Execute" — no silent execution. Cancel always available.</p>
+    </div>
+    <div class="sec-item">
+      <div class="si-icon">🛡️</div>
+      <h4>Safety Limits</h4>
+      <p>Max position: $500. Max leverage: 5x. Loss circuit breaker: 20%. Max 3 concurrent positions. AI enforces these in trade plan generation.</p>
+    </div>
+    <div class="sec-item">
+      <div class="si-icon">⏱️</div>
+      <h4>Rate Limiting</h4>
+      <p>15 messages per 60 seconds per user. Stale AI request cancellation prevents queue buildup. ConversationHandler timeouts (120s) prevent state leaks.</p>
+    </div>
+    <div class="sec-item">
+      <div class="si-icon">🔗</div>
+      <h4>Reply Binding</h4>
+      <p><code>Defaults(do_quote=True)</code> ensures every bot reply is bound to the user's original message via Telegram's reply mechanism. AI responses additionally use explicit <code>reply_to_message_id</code>.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════ INFRASTRUCTURE ══════════ -->
+<section class="sec" id="infra">
+<div class="container">
+  <div class="stag">// infrastructure</div>
+  <h2 class="sh">Deployment</h2>
+  <p class="sd">Single Oracle Cloud VM. Two systemd services. No containers, no load balancer, no external database.</p>
+
+  <div class="infra-grid">
+    <div class="infra-item">
+      <div class="ii-hdr">🖥️ Server</div>
+      <p>Oracle Cloud VM (Ubuntu). Single instance. All files in <code>/home/ubuntu/edgex-agent-bot/</code>. Python 3.11 venv.</p>
+    </div>
+    <div class="infra-item">
+      <div class="ii-hdr">⚙️ edgex-agent.service</div>
+      <p>Main bot process. Runs <code>main.py</code> via venv Python. <code>EnvironmentFile=.env</code>. <code>Restart=always</code>. Long-polling (no webhook).</p>
+    </div>
+    <div class="infra-item">
+      <div class="ii-hdr">📡 bwenews-mcp.service</div>
+      <p>BWEnews sidecar. Runs <code>bwenews_mcp.py</code>. Serves MCP on <code>localhost:8788</code>. Polls @BWEnews every 30s via Telethon.</p>
+    </div>
+    <div class="infra-item">
+      <div class="ii-hdr">📦 Dependencies</div>
+      <p><code>python-telegram-bot[ext]&gt;=21.0</code>, <code>edgex-python-sdk&gt;=0.3.0</code>, <code>httpx</code>, <code>aiohttp</code>, <code>python-dotenv</code>, <code>cryptography</code> (Fernet). Plus <code>edgex-cli</code> (npm global).</p>
+    </div>
+    <div class="infra-item">
+      <div class="ii-hdr">🗄️ Storage</div>
+      <p>SQLite single file <code>edgex_agent.db</code>. No backup automation yet. DB at deployment root (not <code>bot/</code> subdirectory).</p>
+    </div>
+    <div class="infra-item">
+      <div class="ii-hdr">🔧 CLI Tools</div>
+      <p><code>edgex-cli</code> at <code>/home/ubuntu/.npm-global/bin/edgex</code> — exchange market data + order placement. <code>droid</code> at <code>/home/ubuntu/.local/bin/droid</code> — Factory AI inference.</p>
+    </div>
+  </div>
+
+  <h3 style="font-size:1em;font-weight:700;margin:32px 0 12px;">Process Architecture</h3>
+  <div class="code-block"><span class="cm">// Two long-running processes</span>
+
+┌─────────────────────────────────────────────────────────┐
+│  <span class="fn">edgex-agent.service</span>                                    │
+│  main.py → PTB Application (long-polling)               │
+│  ├── ConversationHandler: /start, /setai                │
+│  ├── CommandHandlers: /status /pnl /history /close ...  │
+│  ├── CallbackQueryHandler: 50+ callback patterns        │
+│  ├── MessageHandler: AI chat (handle_message)           │
+│  ├── news_push: background polling loop (async task)    │
+│  └── concurrent_updates=True (parallel processing)      │
+│                                                         │
+│  Connects to:                                           │
+│  ├── Telegram Bot API (HTTPS, long-polling)             │
+│  ├── edgeX Exchange (Python SDK + edgex-cli subprocess) │
+│  ├── LLM providers (httpx async)                        │
+│  └── BWEnews MCP (localhost:8788)                       │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│  <span class="fn">bwenews-mcp.service</span>                                   │
+│  bwenews_mcp.py → aiohttp web server                   │
+│  ├── Telethon: polls @BWEnews channel (get_messages)    │
+│  ├── MCP JSON-RPC: tools/list, tools/call               │
+│  └── Ring buffer: 100 articles, dedup by message ID     │
+│                                                         │
+│  Listens on: http://127.0.0.1:8788/mcp                  │
+└─────────────────────────────────────────────────────────┘
+
+┌────────────────────┐
+│  <span class="fn">edgex_agent.db</span>     │
+│  SQLite · 9 tables │
+│  Fernet encrypted  │
+└────────────────────┘</div>
+
+  <h3 style="font-size:1em;font-weight:700;margin:32px 0 12px;">Environment Variables</h3>
+  <table class="tbl">
+    <tr><th>Variable</th><th>Required</th><th>Purpose</th></tr>
+    <tr><td><code>TELEGRAM_BOT_TOKEN</code></td><td>Yes</td><td>Bot authentication + encryption key derivation</td></tr>
+    <tr><td><code>FACTORY_API_KEY</code></td><td>Yes</td><td>Factory Droid API for news AI analysis + free tier</td></tr>
+    <tr><td><code>TG_API_ID</code> / <code>TG_API_HASH</code></td><td>BWEnews</td><td>Telethon credentials for BWEnews channel polling</td></tr>
+    <tr><td><code>DEMO_ACCOUNT_ID</code> / <code>DEMO_STARK_KEY</code></td><td>Optional</td><td>One-click demo login (dev/testing)</td></tr>
+    <tr><td><code>DEEPSEEK_API_KEY</code></td><td>Optional</td><td>Default AI provider fallback</td></tr>
+    <tr><td><code>FEEDBACK_ADMIN_KEY</code></td><td>Optional</td><td>Admin dashboard authentication</td></tr>
+  </table>
+
+</div>
+</section>
+
+<!-- ══════════ AI SYSTEM ══════════ -->
+<section class="sec" id="ai">
+<div class="container">
+  <div class="stag">// ai system</div>
+  <h2 class="sh">AI Agent Design</h2>
+  <p class="sd">Multi-provider, multi-personality, memory-augmented trading assistant with structured JSON output.</p>
+
+  <h3 style="font-size:1em;font-weight:700;margin-bottom:12px;">System Prompt Construction</h3>
+  <div class="code-block"><span class="fn">system_prompt</span> = SYSTEM_PROMPT_TEMPLATE.<span class="fn">format</span>(
+    live_contracts = <span class="fn">get_live_contracts</span>(),      <span class="cm">// 36 tickers, cached 1h</span>
+    market_context = <span class="fn">get_market_context</span>(symbols), <span class="cm">// BTC/ETH/SOL + detected symbols</span>
+)
+system_prompt += PERSONALITY_PROMPTS[persona]     <span class="cm">// degen/sensei/coldblood/...</span>
+system_prompt += memory_context                    <span class="cm">// T0 + T1 + T2 (≤2000 chars)</span>
+system_prompt += account_context                   <span class="cm">// equity, positions, available balance</span></div>
+
+  <h3 style="font-size:1em;font-weight:700;margin:24px 0 12px;">LLM Provider Matrix</h3>
+  <table class="tbl">
+    <tr><th>Provider</th><th>Protocol</th><th>Models</th><th>Use Case</th></tr>
+    <tr><td>OpenAI-compatible</td><td>POST /chat/completions</td><td>GPT-4o, DeepSeek-Chat, Groq Llama, NVIDIA</td><td>User-configured AI agent</td></tr>
+    <tr><td>Anthropic</td><td>POST /v1/messages (x-api-key header)</td><td>Claude Sonnet 4.5, Claude 3.5</td><td>User-configured AI agent</td></tr>
+    <tr><td>Google Gemini</td><td>POST /v1beta/models/{model}:generateContent</td><td>Gemini 2.0 Flash</td><td>User-configured AI agent</td></tr>
+    <tr><td>Factory Droid</td><td>Subprocess: <code>droid exec</code></td><td>Factory default model</td><td>Free tier + news sentiment analysis</td></tr>
+  </table>
+
+  <h3 style="font-size:1em;font-weight:700;margin:24px 0 12px;">Response Schema</h3>
+  <div class="code-block"><span class="cm">// Two response types — AI must output valid JSON only</span>
+
+<span class="cm">// 1. CHAT — analysis, price queries, conversation</span>
+{<span class="st">"action"</span>: <span class="st">"CHAT"</span>, <span class="st">"reply"</span>: <span class="st">"BTC at $71.4k, down 2.4%..."</span>}
+
+<span class="cm">// 2. TRADE — executable plan (all fields mandatory)</span>
+{<span class="st">"action"</span>: <span class="st">"TRADE"</span>,
+ <span class="st">"asset"</span>: <span class="st">"BTC"</span>, <span class="st">"side"</span>: <span class="st">"BUY"</span>, <span class="st">"size"</span>: <span class="st">"0.014"</span>,
+ <span class="st">"leverage"</span>: <span class="st">"3"</span>, <span class="st">"entry_price"</span>: <span class="st">"71890.0"</span>,
+ <span class="st">"take_profit"</span>: <span class="st">"75000.0"</span>, <span class="st">"stop_loss"</span>: <span class="st">"70000.0"</span>,
+ <span class="st">"confidence"</span>: <span class="st">"HIGH"</span>, <span class="st">"reasoning"</span>: <span class="st">"..."</span>,
+ <span class="st">"position_value_usd"</span>: <span class="st">"100.0"</span>}</div>
+
+  <h3 style="font-size:1em;font-weight:700;margin:24px 0 12px;">7 Personalities</h3>
+  <table class="tbl">
+    <tr><th>ID</th><th>Name</th><th>Vibe</th></tr>
+    <tr><td><code>degen</code></td><td>🔥 Degen</td><td>Bold, aggressive, crypto slang (ape in, WAGMI, LFG). High energy.</td></tr>
+    <tr><td><code>sensei</code></td><td>🎯 Sensei</td><td>Zen, patient, disciplined. Treats trading like martial art.</td></tr>
+    <tr><td><code>coldblood</code></td><td>🤖 Cold Blood</td><td>Zero emotion, pure data. Clinical, probabilistic.</td></tr>
+    <tr><td><code>shitposter</code></td><td>👀 Shitposter</td><td>CT culture, memes, ironic humor. Sharp analysis underneath.</td></tr>
+    <tr><td><code>professor</code></td><td>📚 Professor</td><td>Academic, scholarly rigor. Cites frameworks (EMH, MPT).</td></tr>
+    <tr><td><code>wolf</code></td><td>🐺 Wolf</td><td>Aggressive, dominant. Hunting metaphors. High conviction.</td></tr>
+    <tr><td><code>moe</code></td><td>🌸 Moe</td><td>Cute anime girl energy. Kawaii expressions. Sharp execution.</td></tr>
+  </table>
+</div>
+</section>
+
+<!-- ══════════ COMMANDS ══════════ -->
+<section class="sec">
+<div class="container">
+  <div class="stag">// commands & callbacks</div>
+  <h2 class="sh">Bot Commands</h2>
+  <p class="sd">15 slash commands + 50+ inline callback patterns. All replies bound to original message.</p>
+
+  <table class="tbl">
+    <tr><th>Command</th><th>Auth</th><th>Handler</th><th>Description</th></tr>
+    <tr><td><code>/start</code></td><td>—</td><td>ConversationHandler</td><td>Dashboard with 3 buttons: Event Trading → AI Agent → Trade on edgeX</td></tr>
+    <tr><td><code>/status</code></td><td>edgeX</td><td>cmd_status</td><td>Account equity, available balance, open positions with P&L</td></tr>
+    <tr><td><code>/pnl</code></td><td>edgeX</td><td>cmd_pnl</td><td>Daily P&L report: realized + unrealized, trade count, win rate</td></tr>
+    <tr><td><code>/history</code></td><td>edgeX</td><td>cmd_history</td><td>Recent 10 fills: side, type, leverage, size, price, P&L, time</td></tr>
+    <tr><td><code>/close</code></td><td>edgeX</td><td>cmd_close</td><td>List positions with close buttons. Confirmation modal per position.</td></tr>
+    <tr><td><code>/orders</code></td><td>edgeX</td><td>cmd_orders</td><td>Active orders with individual + bulk cancel buttons</td></tr>
+    <tr><td><code>/setai</code></td><td>—</td><td>ConversationHandler</td><td>AI setup: choose provider → input 3 lines (key/url/model) → auto-test</td></tr>
+    <tr><td><code>/memory</code></td><td>AI</td><td>cmd_memory</td><td>Memory stats + clear button. Shows msg count + summary count.</td></tr>
+    <tr><td><code>/event</code></td><td>—</td><td>cmd_event</td><td>Event Trading hub: sources, toggle, frequency, trade defaults</td></tr>
+    <tr><td><code>/news</code></td><td>—</td><td>cmd_event</td><td>Legacy alias for /event</td></tr>
+    <tr><td><code>/feedback</code></td><td>—</td><td>cmd_feedback</td><td>Submit product feedback (min length enforced)</td></tr>
+    <tr><td><code>/logout</code></td><td>edgeX</td><td>cmd_logout</td><td>Disconnect edgeX account with confirmation</td></tr>
+    <tr><td><code>/help</code></td><td>—</td><td>cmd_help</td><td>Command reference</td></tr>
+    <tr><td><code>/cancel</code></td><td>—</td><td>cancel_setup</td><td>Exit any ConversationHandler state</td></tr>
+  </table>
+</div>
+</section>
+
+<footer>
+  <span>edgeX Agent Architecture · v1.0 · 2026-03-06</span>
+  <span>Generated from source analysis of 8 core modules, 9 database tables, 3 external integrations</span>
+</footer>
+
+</body>
+</html>
