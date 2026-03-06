@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>edgeX Agent YC Full Human Test</title>
+  <style>
+    body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:#0b1020; color:#e6edf7; }
+    .wrap { max-width:1120px; margin:0 auto; padding:32px 20px 60px; }
+    h1 { font-size:32px; margin:0 0 8px; }
+    h2 { font-size:22px; margin:28px 0 12px; border-bottom:1px solid #27304a; padding-bottom:8px; }
+    h3 { font-size:18px; margin:18px 0 10px; }
+    p, li { line-height:1.6; color:#cfd7e6; }
+    .card { background:#121a2f; border:1px solid #27304a; border-radius:14px; padding:18px 20px; margin-top:14px; }
+    .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:18px; }
+    .metric { background:#121a2f; border:1px solid #27304a; border-radius:14px; padding:14px; }
+    .metric .v { font-size:28px; font-weight:800; margin-top:6px; }
+    .pill { display:inline-block; padding:3px 10px; border-radius:999px; font-size:12px; font-weight:700; margin-right:8px; }
+    .good { background:#123a24; color:#7cf0a8; }
+    .warn { background:#4a3510; color:#ffd37a; }
+    .bad { background:#4a1616; color:#ff9a9a; }
+    table { width:100%; border-collapse:collapse; margin-top:12px; }
+    th, td { text-align:left; vertical-align:top; border-bottom:1px solid #27304a; padding:10px 8px; }
+    th { color:#9fb2d3; font-size:13px; text-transform:uppercase; letter-spacing:.04em; }
+    pre { white-space:pre-wrap; background:#0a0f1d; border:1px solid #27304a; border-radius:10px; padding:14px; overflow:auto; color:#dce6ff; }
+    code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+    .footer { margin-top:36px; color:#8ea0c2; font-size:13px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>edgeX Agent 全量人类视角测试报告（YC 标准）</h1>
+    <p>生成时间：2026-03-06 21:01:13。本轮按你给的产品原型与技术架构重新从头做了一次真实用户式测试，目标不是验证对方 claim，而是看产品在真实使用时是否达到 YC partner 会认可的完成度。</p>
+
+    <div class="grid">
+      <div class="metric"><div>命令层</div><div class="v">通过</div></div>
+      <div class="metric"><div>自然语言体验</div><div class="v">部分好</div></div>
+      <div class="metric"><div>按钮交互</div><div class="v">不稳</div></div>
+      <div class="metric"><div>YC 判断</div><div class="v">未过线</div></div>
+    </div>
+
+    <h2>一、我怎么测的</h2>
+    <div class="card">
+      <ul>
+        <li>先读公开产品原型：<code>tg_prototype.html</code>。</li>
+        <li>再读公开技术架构：<code>architecture.html</code>。</li>
+        <li>再对照本地最新 <code>main.py</code> 与原型差异。</li>
+        <li>最后用真实 Telegram 用户会话，像一个普通用户一样去试：命令、反馈、问市场、下单、中文/日文/俄文输入、Dashboard 点击入口、等待 push。</li>
+      </ul>
+    </div>
+
+    <h2>二、总体结论</h2>
+    <div class="card">
+      <p><span class="pill good">好的部分</span> 基础命令层现在已经很顺：<code>/start /help /events(/news alias) /status /pnl /history /memory /feedback</code> 本轮都能正常工作，且回复绑定正确。</p>
+      <p><span class="pill good">好的部分</span> 自然语言问答和一些下单意图明显比前几轮成熟，像 BTC 分析、NVDA 下单、SILVER、CRCL、日文 SOL 这些都能回。</p>
+      <p><span class="pill warn">关键问题</span> 但只要我按产品原型那样去点主入口按钮，自动化层面仍然暴露出不稳定：<code>AI Agent</code> 和 <code>Trade on edgeX</code> callback 在实测里触发 <code>DataInvalidError</code>，<code>Event Trading</code> 点击也没有得到新的自动化响应。</p>
+      <p><span class="pill warn">关键问题</span> 语言人格也有明显失控：我发英文、俄文、日文，bot 却多次用中文 moe 语气回复。这对“your personal AI trading agent”来说是产品一致性问题，不只是风格问题。</p>
+      <p><span class="pill bad">YC 结论</span> 所以我的结论仍然不是“已经 fully polished”，而是：<b>命令层和若干 AI 路径已可用，但产品级交互一致性与入口可靠性还没达到 YC partner 会放心夸的程度。</b></p>
+    </div>
+
+    <h2>三、按产品文档逐项核对</h2>
+    <div class="card">
+      <table>
+        <tr><th>能力</th><th>原型/架构预期</th><th>本轮实测</th><th>结论</th></tr>
+        <tr><td>Dashboard</td><td>3 主按钮：Event Trading → AI Agent → Trade on edgeX；3 条卖点；多语言示例</td><td>文本与顺序基本对齐</td><td><span class="pill good">PASS</span></td></tr>
+        <tr><td>Command layer</td><td>帮助、反馈、记忆、事件、历史、PnL 等命令稳定</td><td>本轮命令层整体稳定</td><td><span class="pill good">PASS</span></td></tr>
+        <tr><td>AI conversation</td><td>支持自然语言、多语言、同语言回复</td><td>能回复，但多语言一致性差，英文/俄文/日文多次回成中文 moe 风格</td><td><span class="pill warn">PARTIAL</span></td></tr>
+        <tr><td>AI trade guidance</td><td>生成可执行建议与 TP/SL</td><td>NVDA、CRCL 等路径可用</td><td><span class="pill good">PASS</span></td></tr>
+        <tr><td>Event Trading</td><td>Event hub、trade defaults、add source、push alerts</td><td>命令入口可用，但按钮点击自动化不稳；45 秒内没收到 push</td><td><span class="pill warn">PARTIAL</span></td></tr>
+        <tr><td>Trade on edgeX</td><td>Trade hub / PnL / positions / orders / logout</td><td>命令可侧面验证部分数据，但入口按钮点击自动化抛错</td><td><span class="pill bad">RISK</span></td></tr>
+      </table>
+    </div>
+
+    <h2>四、真实用户测试结果</h2>
+    <div class="card">
+      <table>
+        <tr><th>测试项</th><th>结果</th><th>判定</th></tr>
+        <tr><td><code>/start</code></td><td>正常，文案已更新为 Personal AI Trading Agent + 3 卖点</td><td><span class="pill good">PASS</span></td></tr>
+        <tr><td><code>/help</code></td><td>正常，命令清单可读</td><td><span class="pill good">PASS</span></td></tr>
+        <tr><td><code>/news</code></td><td>返回 Event Trading 页面</td><td><span class="pill good">PASS</span></td></tr>
+        <tr><td><code>/event</code></td><td>返回 Event Trading 页面</td><td><span class="pill good">PASS</span></td></tr>
+        <tr><td><code>/status</code></td><td>正常</td><td><span class="pill good">PASS</span></td></tr>
+        <tr><td><code>/pnl</code></td><td>正常</td><td><span class="pill good">PASS</span></td></tr>
+        <tr><td><code>/history</code></td><td>正常</td><td><span class="pill good">PASS</span></td></tr>
+        <tr><td><code>/memory</code></td><td>正常</td><td><span class="pill good">PASS</span></td></tr>
+        <tr><td><code>/feedback</code> + 文本提交</td><td>正常记录并返回确认</td><td><span class="pill good">PASS</span></td></tr>
+        <tr><td>点击 Event Trading</td><td>没有拿到新的自动化响应</td><td><span class="pill warn">UNSTABLE</span></td></tr>
+        <tr><td>点击 AI Agent</td><td><code>DataInvalidError</code></td><td><span class="pill bad">FAIL</span></td></tr>
+        <tr><td>点击 Trade on edgeX</td><td><code>DataInvalidError</code></td><td><span class="pill bad">FAIL</span></td></tr>
+        <tr><td><code>What is your honest view on BTC right now?</code></td><td>有回复，但用中文 moe 风格，不符合输入语言</td><td><span class="pill warn">PARTIAL</span></td></tr>
+        <tr><td><code>buy NVDA 0.1 with 2x</code></td><td>能给交易建议与按钮</td><td><span class="pill good">PASS</span></td></tr>
+        <tr><td><code>现在 SILVER 怎么看？</code></td><td>能给分析</td><td><span class="pill good">PASS</span></td></tr>
+        <tr><td><code>CRCL涨的离谱，怎么操作</code></td><td>能给分析与按钮</td><td><span class="pill good">PASS</span></td></tr>
+        <tr><td><code>Короткий NVDA на 100$</code></td><td>内容合理，但用中文 moe 风格，不符合俄文输入</td><td><span class="pill warn">PARTIAL</span></td></tr>
+        <tr><td><code>ソラナをロングしたい、少しだけ</code></td><td>内容合理，但仍用中文 moe 风格，不符合日文输入</td><td><span class="pill warn">PARTIAL</span></td></tr>
+        <tr><td>新闻 push 观察 45 秒</td><td>未收到 push</td><td><span class="pill warn">UNVERIFIED</span></td></tr>
+      </table>
+    </div>
+
+    <h2>五、关键问题</h2>
+    <div class="card">
+      <h3>问题 1：主入口按钮的可验证可靠性仍不足</h3>
+      <pre>clicked: AI Agent
+error: DataInvalidError: Encrypted data invalid
+
+clicked: Trade on edgeX
+error: DataInvalidError: Encrypted data invalid</pre>
+      <p>这不一定 100% 是 bot 逻辑 bug，也可能与 Telegram callback 生命周期和 Telethon 自动化方式有关；但从 QA/产品验证角度，它说明主入口的“可重复验证性”仍差。</p>
+
+      <h3>问题 2：语言/人格控制明显漂移</h3>
+      <pre>Input: What is your honest view on BTC right now?
+Reply: 中文 + moe 语气
+
+Input: Короткий NVDA на 100$
+Reply: 中文 + moe 语气
+
+Input: ソラナをロングしたい、少しだけ
+Reply: 中文 + moe 语气</pre>
+      <p>产品文档和技术架构都写了“same language reply / personality selectable”，但目前 bot 看起来把某次 persona 或语言记忆污染到了默认输出，这会让真实用户直接感觉“不可信”。</p>
+
+      <h3>问题 3：事件交易能力还没有完成用户面前的闭环验证</h3>
+      <p>虽然 <code>/event</code> 页面能打开，trade defaults/add source UI 也在原型里定义得很完整，但我本轮没能观察到真实 push，因此还不能说“事件驱动交易已经完整跑通到用户表面”。</p>
+    </div>
+
+    <h2>六、YC partner 视角判断</h2>
+    <div class="card">
+      <p>如果我是 YC partner，我会这样看：</p>
+      <ul>
+        <li><b>优点：</b>方向是对的。把 news、AI chat、exchange control 收进一个 Telegram agent，确实有潜在的 wow factor。</li>
+        <li><b>优点：</b>命令层和账户面板比前几轮成熟得多，至少不像纯 demo 了。</li>
+        <li><b>硬伤：</b>一旦核心 persona / language consistency 崩掉，用户会立刻怀疑“这个 agent 真的懂我吗？”</li>
+        <li><b>硬伤：</b>主入口按钮和 push 场景还没形成稳定、可反复演示的闭环，这会直接削弱 demo quality。</li>
+      </ul>
+      <p>所以我的 YC 结论是：<b>这是一个有方向、有产品感、但还没达到 top-tier demo bar 的项目。</b> 现在更像“强原型 + 可用雏形”，还不是我会说“wow, ship it broadly”的程度。</p>
+    </div>
+
+    <h2>七、最该先修的 3 件事</h2>
+    <div class="card">
+      <ol>
+        <li>把语言与 persona 锁定策略修好：输入是什么语言，就稳定回什么语言；不要让历史记忆把默认人格污染成 moe。</li>
+        <li>补一组真正可靠的 callback 回归测试，确保 Dashboard 三个主入口都可稳定演示。</li>
+        <li>人为触发一条事件 push，重新验证用户面前的完整新闻闭环，而不是只验证管理页面。</li>
+      </ol>
+    </div>
+
+    <div class="footer">
+      Independent human-style verification by Droid, using the public prototype, public architecture doc, and a real Telegram user session.
+    </div>
+  </div>
+</body>
+</html>
