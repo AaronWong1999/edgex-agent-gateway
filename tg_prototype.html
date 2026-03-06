@@ -55,8 +55,8 @@ h1{text-align:center;padding:24px 0 4px;font-size:24px}.subtitle{text-align:cent
 <h1>edgeX Agent — Navigation Blueprint v9</h1>
 <p class="subtitle">100% code-accurate — Back = edit in place (safe_edit) — modals = NEW msgs (dashed red) — results show Start only — all AI trades have mandatory TP/SL</p>
 <div class="stats">
-<div class="stat"><div class="stat-num">3</div><div class="stat-label">Modules</div></div>
-<div class="stat"><div class="stat-num">68</div><div class="stat-label">Screens</div></div>
+<div class="stat"><div class="stat-num">4</div><div class="stat-label">Modules</div></div>
+<div class="stat"><div class="stat-num">80</div><div class="stat-label">Screens</div></div>
 <div class="stat"><div class="stat-num">3</div><div class="stat-label">Max Depth</div></div>
 </div>
 <div class="legend">
@@ -254,6 +254,65 @@ html+=`<div class="tree-item"><div class="flow-row">${P('news_macro','📰 Macro
 
 html+=`</div></div>`;
 html+=`</div></div>`;
+
+// ═══════════════════════════════════════
+// STANDALONE SLASH COMMANDS
+// ═══════════════════════════════════════
+html+=`<div class="module"><div class="mod-hdr m-trade"><div class="ic">⌨️</div><div class="inf"><h2>Slash Commands (standalone)</h2><p>Direct commands from chat input. Same data as Trade Hub / AI Hub sub-screens but accessible without navigating the dashboard.</p></div></div>`;
+
+// /status
+html+=`<div class="flow-section"><div class="flow-label">/status — Account Status</div><div class="flow-row">`;
+html+=P('cmd_status','/status',`📊 <b>Account Status</b>\n\n├ Equity: <code>$1,234.56</code>\n└ Available: <code>$890.12</code>\n\n📈 <b>Open Positions (2):</b>\n\n⬆️ <b>BTC</b> LONG <code>0.01</code>\n  Entry: <code>$71,200.0000</code> | PnL: <code>+$12.30</code>\n  Liq: <code>$68,500</code>\n\n⬇️ <b>ETH</b> SHORT <code>0.5</code>\n  Entry: <code>$3,000.0000</code> | PnL: <code>-$5.20</code>\n  Liq: <code>$3,450</code>`,[{t:'🚀 Start',c:'bk f'}],'Direct command. Same data as Trade Hub. Reply bound to user message.',1);
+html+=`</div></div>`;
+
+// /pnl
+html+=`<div class="flow-section"><div class="flow-label">/pnl — Daily P&L Report</div><div class="flow-row">`;
+html+=P('cmd_pnl','/pnl',`============================\n📊  <b>edgeX Agent Daily Report</b>\n============================\n\n├ Realized: <code>+$12.30</code>\n├ Unrealized: <code>-$5.20</code>\n├ Total: <code>+$7.10</code>\n├ Win Rate: <code>60%</code> (3W/2L)\n└ Trades: <code>5</code>\n\n============================`,[{t:'🚀 Start',c:'bk f'}],'Daily P&L with win rate and trade count.',1);
+html+=`</div></div>`;
+
+// /history
+html+=`<div class="flow-section"><div class="flow-label">/history — Recent Trades</div><div class="flow-row">`;
+html+=P('cmd_history','/history',`📜 <b>Recent Trades (edgeX)</b>\n\n⬆️ BTC BUY LIMIT (5x) 0.01 @ $71,234.00 | PnL: +$2.3400 | 03/05 08:00\n⬇️ DOGE SELL MARKET (3x) 300 @ $0.09600 | PnL: -$0.0300 | 03/05 07:30\n⬆️ SOL BUY MARKET (2x) 5 @ $142.50 | PnL: +$8.7500 | 03/04 15:20`,[{t:'🚀 Start',c:'bk f'}],'Up to 10 recent fills. Type + leverage shown.',1);
+html+=`</div></div>`;
+
+// /orders
+html+=`<div class="flow-section"><div class="flow-label">/orders — Open Orders</div><div class="flow-row">`;
+html+=P('cmd_orders','/orders',`📋 <b>Open Orders</b>\n\n2 order(s):\n\n  • BTC BUY LIMIT (5x) | Size: 100 | Price: $70,000 | Now: $71,234 (1.7% away)\n  • ETH SELL LIMIT (3x) | Size: 50 | Price: $4,100 | Now: $3,950 (3.8% away)`,[{t:'❌ Cancel BTC BUY 100@70000',c:'rd f'},{t:'❌ Cancel ETH SELL 50@4100',c:'rd f'},{t:'❌ Cancel All Orders',c:'rd f'},{t:'🚀 Start',c:'bk f'}],'Same as Trade Hub → Orders. Cancel flows use same modals.',1);
+html+=`</div></div>`;
+
+// /close
+html+=`<div class="flow-section"><div class="flow-label">/close — Close Position</div><div class="flow-row">`;
+html+=P('cmd_close','/close',`💰 <b>Close Position</b>\n\n⬆️ <b>BTC LONG</b> (5x)\n  ├ Value: <code>$712.00</code> | Entry: <code>$71,200.00</code>\n  └ PnL: <code>+$12.30</code>\n\n⬇️ <b>ETH SHORT</b> (3x)\n  ├ Value: <code>$1,500.00</code> | Entry: <code>$3,000.00</code>\n  └ PnL: <code>-$5.20</code>`,[{t:'🔴 Market Close BTC LONG',c:'rd f'},{t:'🔴 Market Close ETH SHORT',c:'rd f'},{t:'🔴 Market Close All',c:'rd f'},{t:'🚀 Start',c:'bk f'}],'Same close confirmation modals as Trade Hub.',1);
+html+=`</div></div>`;
+
+// /memory
+html+=`<div class="flow-section"><div class="flow-label">/memory — Agent Memory</div><div class="flow-row">`;
+html+=P('cmd_memory','/memory',`📝 <b>Memory</b>\n\n├ Messages: <code>180</code>\n└ Summaries: <code>24</code>\n├ Since: <code>2026-03-06 04:56</code>\n\n📋 <b>What I Know About You:</b>\n  • Style: aggressive\n  • Favorites: BTC, SOL, DOGE\n  • Risk: high\n\nYour Agent remembers past conversations and learns your preferences over time. The more you chat, the more personalized your experience becomes.`,[{t:'🗑 Clear Memory',c:'rd'},{t:'🔙 Back',c:'bk'}],'Shows msg count, summaries, learned preferences. Clear = modal confirm.',1);
+html+=`</div></div>`;
+
+// /event
+html+=`<div class="flow-section"><div class="flow-label">/event — Event Trading</div><div class="flow-row">`;
+html+=P('cmd_event','/event',`📰 <b>Event Trading — Event Trading</b>\n\nAI-analyzed news with one-tap trade buttons.\n\n✅ <b>BWEnews</b> — 5/hr`,[{t:'BWEnews 🟢ON',c:'gn',w:'t'},{t:'🕒',c:'gy',w:'q'},{t:'🗑',c:'gy',w:'q'},{t:'➕ Add News Source',c:'bl f'},{t:'⚙️ Trade Defaults',c:'bl f'},{t:'🔙 Back',c:'bk f'}],'Same as Dashboard → Event Trading.',1);
+html+=`</div></div>`;
+
+// /help
+html+=`<div class="flow-section"><div class="flow-label">/help — Command Reference</div><div class="flow-row">`;
+html+=P('cmd_help','/help',`🤖 <b>edgeX Agent</b> — your AI trading copilot on Telegram\n\nJust talk to me in any language:\n<span class="d">"BTC pumping, should I long?"</span>\n<span class="d">"ソラナをロングしたい、少しだけ"</span>\n<span class="d">"지금 SILVER 상황 어때?"</span>\n\n<b>Trading:</b>\n/start — dashboard & main menu\n/status — account equity & open positions\n/close — close a position with confirmation\n/orders — view & cancel open orders\n/history — recent trades\n/pnl — daily P&L report & win rate\n\n<b>AI & Events:</b>\n/setai — configure AI provider & model\n/memory — what your Agent remembers\n/event — event trading & news alerts\n\n<b>Other:</b>\n/feedback — send feedback to the team\n/logout — disconnect edgeX account\n/help — this message`,[{t:'🚀 Start',c:'bk f'}],'Full command reference with examples.',1);
+html+=`</div></div>`;
+
+// /feedback
+html+=`<div class="flow-section"><div class="flow-label">/feedback — Send Feedback</div><div class="flow-row">`;
+html+=P('cmd_feedback_prompt','/feedback',`💬 <b>Feedback</b>\n\nTell us what you'd like to see, or what's not working well.\nType your message below — it goes straight to the team:`,[],'No buttons. Waits for user text input. Min 3 chars.',1);
+html+=A('user types');
+html+=P('cmd_feedback_done','✅ Recorded',`✅ <b>Got it!</b> Your feedback has been recorded. Thanks!`,[{t:'🚀 Start',c:'bk f'}],'Feedback saved to DB. Start button to return.',1);
+html+=`</div></div>`;
+
+// /logout
+html+=`<div class="flow-section"><div class="flow-label">/logout — Disconnect Account</div><div class="flow-row">`;
+html+=P('cmd_logout','/logout',`🚪 <b>Disconnect</b>\n\nThis will log out your edgeX account.\nAre you sure?`,[{t:'✅ Yes, logout',c:'rd'},{t:'❌ Cancel',c:'gy'}],'Same modal flow as Trade Hub → Disconnect.',1);
+html+=`</div></div>`;
+
+html+=`</div>`;
 
 document.getElementById("app").innerHTML=html;
 document.getElementById("search").addEventListener("input",e=>{const q=e.target.value.toLowerCase();document.querySelectorAll(".phone").forEach(p=>{if(!q){p.classList.remove("dimmed","highlight");return;}if(p.dataset.search.includes(q)){p.classList.add("highlight");p.classList.remove("dimmed");}else{p.classList.add("dimmed");p.classList.remove("highlight");}});});
